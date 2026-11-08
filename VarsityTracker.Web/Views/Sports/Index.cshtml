@@ -1,0 +1,147 @@
+@model IEnumerable<VarsityTracker.Core.Models.Sport>
+@{
+    ViewData["Title"] = "Sports & Rules Engine";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-trophy text-warning me-2"></i>Sports & Rules Engine</h2>
+        <p class="text-muted mb-0">Module 1 (CRUD) - Configure tournament sports disciplines, rulesets, and scoring structures</p>
+    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Register New Sport
+        </a>
+    }
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Search by sport name (e.g. Futsal, Badminton)..." />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100">Filter</button>
+            </div>
+            @if (ViewData["CurrentSearch"] != null)
+            {
+                <div class="col-md-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100">Reset</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="table-container shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Sport Discipline</th>
+                    <th>Scoring Engine</th>
+                    <th>Period Structure</th>
+                    <th>Linked Fixtures</th>
+                    <th class="text-end">Management Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-trophy fs-1 text-muted opacity-50 d-block mb-2"></i>
+                            No sports disciplines registered yet. Click "Register New Sport" above to add one.
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="p-2 rounded-3 bg-light text-primary fs-5">
+                                    @if (item.SportName.Contains("Futsal") || item.SportName.Contains("Football"))
+                                    {
+                                        <span>⚽</span>
+                                    }
+                                    else if (item.SportName.Contains("Badminton") || item.SportName.Contains("Tennis"))
+                                    {
+                                        <span>🏸</span>
+                                    }
+                                    else if (item.SportName.Contains("Basketball"))
+                                    {
+                                        <span>🏀</span>
+                                    }
+                                    else if (item.SportName.Contains("Volleyball"))
+                                    {
+                                        <span>🏐</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-trophy-fill text-warning"></i>
+                                    }
+                                </span>
+                                <div>
+                                    <strong class="text-dark fs-6">@item.SportName</strong>
+                                    <small class="text-muted d-block">ID: #SP-@item.SportId</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @if (item.ScoringType == "Goals")
+                            {
+                                <span class="badge badge-subtle-success d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-bullseye"></i> Goals Engine
+                                </span>
+                            }
+                            else if (item.ScoringType == "Sets")
+                            {
+                                <span class="badge badge-subtle-primary d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-layers"></i> Sets Engine
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-subtle-warning d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-123"></i> Points Engine
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                <i class="bi bi-clock-history me-1 text-muted"></i>
+                                @item.MaxPeriods @(item.ScoringType == "Sets" ? "Sets" : item.ScoringType == "Goals" ? "Halves" : "Quarters")
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border">
+                                <i class="bi bi-calendar3 me-1"></i>@item.Matches.Count Matches
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@item.SportId" class="btn btn-sm btn-outline-secondary me-1" title="View Details">
+                                <i class="bi bi-eye"></i> Details
+                            </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.SportId" class="btn btn-sm btn-outline-primary me-1" title="Edit Parameters">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.SportId" class="btn btn-sm btn-outline-danger" title="Delete Sport">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

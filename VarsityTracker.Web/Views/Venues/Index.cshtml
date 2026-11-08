@@ -1,0 +1,142 @@
+@model IEnumerable<VarsityTracker.Core.Models.Venue>
+@{
+    ViewData["Title"] = "Venues & Facilities";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-geo-alt text-danger me-2"></i>Venues & Campus Facilities</h2>
+        <p class="text-muted mb-0">Module 3 (CRUD) - Manage UTHM varsity sports infrastructure, operational statuses, and hazard maintenance</p>
+    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Register New Venue
+        </a>
+    }
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Search by venue name or location..." />
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">-- All Operational Statuses --</option>
+                    <option value="available" selected="@(ViewData["CurrentStatus"] as string == "available")">Available for Matches</option>
+                    <option value="maintenance" selected="@(ViewData["CurrentStatus"] as string == "maintenance")">Under Maintenance / Hazard</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100">Filter</button>
+            </div>
+            @if (ViewData["CurrentSearch"] != null || ViewData["CurrentStatus"] != null)
+            {
+                <div class="col-md-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100">Reset</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100 card-hover shadow-sm border-0 border-top border-4 @(item.IsAvailable ? "border-success" : "border-danger")">
+                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    <div style="height: 140px; overflow: hidden; position: relative;">
+                        <img src="@item.ImageUrl" alt="@item.VenueName" class="w-100 h-100 object-fit-cover" onerror="this.parentElement.style.display='none';" />
+                        <div class="position-absolute top-0 end-0 m-2">
+                            @if (item.IsAvailable)
+                            {
+                                <span class="badge bg-success shadow-sm">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger shadow-sm">Closed / Maintenance</span>
+                            }
+                        </div>
+                    </div>
+                }
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        @if (string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            @if (item.IsAvailable)
+                            {
+                                <span class="badge badge-subtle-success d-inline-flex align-items-center gap-1">
+                                    <span class="d-inline-block rounded-circle bg-success" style="width: 7px; height: 7px;"></span>
+                                    Available
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-subtle-danger d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-tools"></i>
+                                    Closed / Hazard
+                                </span>
+                            }
+                        }
+
+                        @if (item.VenueFeedbacks.Any(f => f.Status != "Resolved"))
+                        {
+                            <span class="badge badge-subtle-warning d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                @item.VenueFeedbacks.Count(f => f.Status != "Resolved") Active Issues
+                            </span>
+                        }
+                    </div>
+
+                    <div class="d-flex align-items-start gap-3 mb-2">
+                        <span class="p-2.5 rounded-3 @(item.IsAvailable ? "bg-primary-subtle text-primary" : "bg-danger-subtle text-danger") fs-4">
+                            <i class="bi bi-building"></i>
+                        </span>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1">@item.VenueName</h5>
+                            <p class="text-muted small mb-0">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i>@item.Location
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between small text-muted">
+                        <span><i class="bi bi-calendar3 me-1 text-primary"></i><strong>@item.Matches.Count</strong> Matches</span>
+                        <span><i class="bi bi-shield-exclamation me-1 text-danger"></i><strong>@item.VenueFeedbacks.Count</strong> Hazard Tickets</span>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light border-top d-flex justify-content-between align-items-center px-4 py-2.5">
+                    <a asp-action="Details" asp-route-id="@item.VenueId" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-eye me-1"></i> Details
+                    </a>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="d-flex gap-1">
+                            <form asp-action="ToggleAvailability" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.VenueId" />
+                                <button type="submit" class="btn btn-sm @(item.IsAvailable ? "btn-outline-warning text-dark" : "btn-outline-success")" 
+                                        title="@(item.IsAvailable ? "Mark as Maintenance" : "Mark as Available")">
+                                    <i class="bi @(item.IsAvailable ? "bi-pause-circle" : "bi-play-circle")"></i>
+                                </button>
+                            </form>
+                            <a asp-action="Edit" asp-route-id="@item.VenueId" class="btn btn-sm btn-outline-primary" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.VenueId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

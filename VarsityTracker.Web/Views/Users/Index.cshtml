@@ -1,0 +1,143 @@
+@model IEnumerable<VarsityTracker.Core.Models.User>
+@{
+    ViewData["Title"] = "User & RBAC Management";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Users & RBAC</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="fw-bold mb-0 text-dark">User & RBAC Management</h2>
+            <span class="badge bg-primary rounded-pill">@Model.Count() Accounts</span>
+        </div>
+        <p class="text-muted mb-0 small mt-1">Role-based access control, credentials, and authorization levels (Admin, Scorekeeper, Student)</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary shadow-sm">
+        <i class="bi bi-person-plus-fill me-1"></i> Register New User
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <select name="role" class="form-select">
+                        <option value="">All System Roles</option>
+                        <option value="Admin" selected="@(ViewData["CurrentRole"] as string == "Admin")">Admin</option>
+                        <option value="Scorekeeper" selected="@(ViewData["CurrentRole"] as string == "Scorekeeper")">Scorekeeper</option>
+                        <option value="Student" selected="@(ViewData["CurrentRole"] as string == "Student")">Student</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Search by name, matric/staff ID, or email..." />
+                </div>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-funnel me-1"></i>Filter</button>
+                <a asp-action="Index" class="btn btn-outline-secondary" title="Reset Filters"><i class="bi bi-arrow-counterclockwise"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Matric / Staff ID</th>
+                    <th>User Details</th>
+                    <th>Email Address</th>
+                    <th>Assigned Role</th>
+                    <th>Faculty</th>
+                    <th>System Activity</th>
+                    <th class="text-end" style="width: 140px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>
+                            <span class="badge bg-light text-dark border font-monospace px-2 py-1">@user.MatricNo</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 34px; height: 34px; font-size: 13px;">
+                                    @(string.IsNullOrWhiteSpace(user.FullName) ? "U" : user.FullName.Substring(0, 1).ToUpper())
+                                </div>
+                                <div class="fw-bold text-dark">@user.FullName</div>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="mailto:@user.Email" class="text-decoration-none text-muted small"><i class="bi bi-envelope me-1"></i>@user.Email</a>
+                        </td>
+                        <td>
+                            @if (user.Role == "Admin")
+                            {
+                                <span class="badge badge-subtle-danger"><i class="bi bi-shield-shaded me-1"></i>Administrator</span>
+                            }
+                            else if (user.Role == "Scorekeeper")
+                            {
+                                <span class="badge badge-subtle-warning"><i class="bi bi-stopwatch me-1"></i>Scorekeeper</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-subtle-primary"><i class="bi bi-mortarboard me-1"></i>Student</span>
+                            }
+                        </td>
+                        <td>
+                            @if (user.Faculty != null)
+                            {
+                                <span class="badge bg-primary px-2 py-1">@user.Faculty.FacultyCode</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">-</span>
+                            }
+                        </td>
+                        <td class="small text-muted">
+                            @if (user.Role == "Scorekeeper")
+                            {
+                                <span><i class="bi bi-controller me-1"></i>@user.AssignedMatches.Count Assigned Games</span>
+                            }
+                            else if (user.Role == "Student")
+                            {
+                                <span><i class="bi bi-bell me-1"></i>@user.MatchReminders.Count Alerts &bull; @user.VenueFeedbacks.Count Tickets</span>
+                            }
+                            else
+                            {
+                                <span class="text-success fw-semibold"><i class="bi bi-check-all me-1"></i>Full System Admin</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Details" asp-route-id="@user.UserId" class="btn btn-outline-secondary" title="Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

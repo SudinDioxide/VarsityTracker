@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:VarsityTracker.Mobile.Models"
+             x:Class="VarsityTracker.Mobile.Views.StandingsPage"
+             Title="Championship Standings"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Top Institutional Header Banner -->
+        <Border Grid.Row="0" BackgroundColor="#0D2B45" Padding="16, 12" StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                <Border Grid.Column="0" BackgroundColor="White" Padding="4" WidthRequest="48" HeightRequest="48" StrokeShape="RoundRectangle 8" StrokeThickness="0" VerticalOptions="Center">
+                    <Image Source="uthm_logo.png" Aspect="AspectFit" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="UTHM SUKIPT 2026/2027" TextColor="#FFC107" FontSize="11" FontAttributes="Bold" CharacterSpacing="1" />
+                        <Border Grid.Column="1" BackgroundColor="#F59E0B" Padding="8, 2" StrokeShape="RoundRectangle 10" StrokeThickness="0">
+                            <Label Text="Live Standings" TextColor="#0D2B45" FontSize="10" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+                    <Label Text="Inter-Faculty Standings" TextColor="White" FontSize="19" FontAttributes="Bold" />
+                    <Label Text="Official tournament point rankings and goal difference." TextColor="#CED4DA" FontSize="11" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area with Pull-to-Refresh -->
+        <RefreshView Grid.Row="1" x:Name="StandingsRefreshView" Refreshing="OnRefreshStandings">
+            <ScrollView Padding="12, 10">
+                <VerticalStackLayout Spacing="10">
+
+                    <!-- Scoring Legend Card -->
+                    <Border BackgroundColor="White" Padding="12, 8" Stroke="#E2E8F0" StrokeShape="RoundRectangle 8">
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="ℹ️" FontSize="14" VerticalOptions="Center" Margin="0,0,8,0" />
+                            <Label Grid.Column="1" Text="3 Points for Win • 1 Point for Draw • 0 for Loss" FontSize="11" TextColor="#64748B" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Table Header -->
+                    <Border BackgroundColor="#E2E8F0" Padding="12, 8" StrokeThickness="0" StrokeShape="RoundRectangle 6">
+                        <Grid ColumnDefinitions="45, *, 28, 28, 28, 38, 44">
+                            <Label Grid.Column="0" Text="RANK" FontSize="10" FontAttributes="Bold" TextColor="#475569" HorizontalOptions="Center" />
+                            <Label Grid.Column="1" Text="FACULTY" FontSize="10" FontAttributes="Bold" TextColor="#475569" />
+                            <Label Grid.Column="2" Text="P" FontSize="10" FontAttributes="Bold" TextColor="#475569" HorizontalOptions="Center" />
+                            <Label Grid.Column="3" Text="W" FontSize="10" FontAttributes="Bold" TextColor="#16A34A" HorizontalOptions="Center" />
+                            <Label Grid.Column="4" Text="L" FontSize="10" FontAttributes="Bold" TextColor="#DC2626" HorizontalOptions="Center" />
+                            <Label Grid.Column="5" Text="+/-" FontSize="10" FontAttributes="Bold" TextColor="#475569" HorizontalOptions="Center" />
+                            <Label Grid.Column="6" Text="PTS" FontSize="10" FontAttributes="Bold" TextColor="#0D2B45" HorizontalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Standings List -->
+                    <CollectionView x:Name="StandingsCollectionView" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:StandingItem">
+                                <Border Margin="0, 4" Padding="12, 10" StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1">
+                                    <Grid ColumnDefinitions="45, *, 28, 28, 28, 38, 44" VerticalOptions="Center">
+                                        <!-- Rank Badge -->
+                                        <Border Grid.Column="0" BackgroundColor="{Binding RankBadgeColor}" Padding="4, 2" WidthRequest="34" HeightRequest="26" StrokeShape="RoundRectangle 6" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label Text="{Binding RankDisplay}" TextColor="White" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+
+                                        <!-- Faculty Info -->
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                            <Label Text="{Binding FacultyCode}" FontSize="14" FontAttributes="Bold" TextColor="#0D2B45" />
+                                            <Label Text="{Binding FacultyName}" FontSize="10" TextColor="#64748B" LineBreakMode="TailTruncation" MaxLines="1" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Matches Played -->
+                                        <Label Grid.Column="2" Text="{Binding Played}" FontSize="12" FontAttributes="Bold" TextColor="#1E293B" HorizontalOptions="Center" VerticalOptions="Center" />
+
+                                        <!-- Wins -->
+                                        <Label Grid.Column="3" Text="{Binding Won}" FontSize="12" FontAttributes="Bold" TextColor="#16A34A" HorizontalOptions="Center" VerticalOptions="Center" />
+
+                                        <!-- Losses -->
+                                        <Label Grid.Column="4" Text="{Binding Lost}" FontSize="12" FontAttributes="Bold" TextColor="#DC2626" HorizontalOptions="Center" VerticalOptions="Center" />
+
+                                        <!-- Goal Difference -->
+                                        <Label Grid.Column="5" Text="{Binding DiffDisplay}" FontSize="11" FontAttributes="Bold" TextColor="#64748B" HorizontalOptions="Center" VerticalOptions="Center" />
+
+                                        <!-- Total Championship Points -->
+                                        <Border Grid.Column="6" BackgroundColor="#2563EB" Padding="6, 2" StrokeShape="RoundRectangle 6" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label Text="{Binding Points}" TextColor="White" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>
+

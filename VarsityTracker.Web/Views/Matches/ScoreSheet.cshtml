@@ -1,0 +1,330 @@
+@model VarsityTracker.Core.Models.Match
+@{
+    ViewData["Title"] = $"Borang Perlawanan Rasmi - {Model.HomeFaculty?.FacultyCode} vs {Model.AwayFaculty?.FacultyCode}";
+    var scoringType = Model.Sport?.ScoringType ?? "Points";
+    var homeWinner = Model.HomeTotalScore > Model.AwayTotalScore;
+    var awayWinner = Model.AwayTotalScore > Model.HomeTotalScore;
+    var isDraw = Model.HomeTotalScore == Model.AwayTotalScore;
+}
+
+<div class="score-sheet-wrapper my-3">
+    <!-- Non-Printable Action Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-3 shadow-sm border d-print-none flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Kembali ke Maklumat Perlawanan
+            </a>
+            <span class="badge bg-warning text-dark fw-bold">Dokumen Rasmi UTHM SUKIPT</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-primary fw-bold px-4 shadow-sm" onclick="window.print()">
+                <i class="bi bi-printer-fill me-1"></i> Cetak / Simpan PDF
+            </button>
+            <a asp-controller="LiveScore" asp-action="Console" asp-route-id="@Model.MatchId" class="btn btn-danger btn-sm">
+                <i class="bi bi-broadcast me-1"></i> Konsol Scorekeeper
+            </a>
+        </div>
+    </div>
+
+    <!-- Official Printable Sheet Container -->
+    <div class="card p-4 p-md-5 border-dark shadow-sm bg-white" id="printableArea" style="border: 2px solid #0f172a !important; font-family: 'Times New Roman', Times, serif;">
+        <!-- Header with UTHM Crest (Aligned layout) -->
+        <div class="pb-3 border-bottom border-2 border-dark mb-4">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <!-- Left: UTHM Official Crest -->
+                <div style="flex: 0 0 170px; width: 170px;" class="text-start">
+                    <img src="~/images/uthm-logo.png" alt="UTHM Logo" class="img-fluid" style="max-height: 68px; max-width: 170px; object-fit: contain; display: block;" />
+                </div>
+
+                <!-- Center: Official University Header Typography -->
+                <div class="text-center flex-grow-1 px-2">
+                    <h5 class="fw-bold mb-1 text-uppercase text-dark" style="letter-spacing: 1px; font-size: 1.05rem;">
+                        UNIVERSITI TUN HUSSEIN ONN MALAYSIA
+                    </h5>
+                    <div class="fw-semibold text-uppercase text-secondary" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                        Pusat Sukan &amp; Rekreasi Universiti &bull; Fakulti Sains Komputer &amp; Teknologi Maklumat
+                    </div>
+                    <h4 class="fw-bold my-2 text-uppercase text-decoration-underline text-dark" style="letter-spacing: 0.8px; font-size: 1.25rem;">
+                        BORANG KEPUTUSAN RASMI PERLAWANAN
+                    </h4>
+                    <div class="fst-italic text-secondary" style="font-size: 0.82rem;">
+                        KEJOHANAN SUKAN ANTARA FAKULTI UTHM (SUKIPT 2026/2027)
+                    </div>
+                </div>
+
+                <!-- Right: Match ID Badge Box -->
+                <div style="flex: 0 0 130px; width: 130px;" class="text-end">
+                    <div class="border border-2 border-dark p-2 text-center bg-light" style="font-size: 11px;">
+                        <div class="fw-bold text-muted small">MATCH ID</div>
+                        <div class="fs-5 fw-bold font-monospace text-dark my-1">#@Model.MatchId.ToString("D4")</div>
+                        <span class="badge @(Model.Status == "Live" ? "bg-danger" : Model.Status == "Completed" ? "bg-success" : "bg-primary") text-uppercase px-2 py-1" style="font-size: 10px;">
+                            @Model.Status
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixture Metadata Grid -->
+        <table class="table table-bordered border-dark table-sm mb-4" style="font-size: 13.5px;">
+            <tbody>
+                <tr>
+                    <td class="table-light fw-bold" style="width: 18%;">Acara Sukan:</td>
+                    <td style="width: 32%;"><strong>@Model.Sport?.SportName</strong> (@Model.Sport?.ScoringType)</td>
+                    <td class="table-light fw-bold" style="width: 18%;">Tarikh &amp; Masa:</td>
+                    <td style="width: 32%;">@Model.MatchDate.ToString("dd MMMM yyyy (dddd), h:mm tt")</td>
+                </tr>
+                <tr>
+                    <td class="table-light fw-bold">Gelanggang / Venue:</td>
+                    <td>@Model.Venue?.VenueName (@Model.Venue?.Location)</td>
+                    <td class="table-light fw-bold">Pegawai / Pengadil:</td>
+                    <td>@(Model.Scorekeeper?.FullName ?? "Pegawai Kejohanan UTHM") (<code>@(Model.Scorekeeper?.MatricNo ?? "OFFICIAL")</code>)</td>
+                </tr>
+                <tr>
+                    <td class="table-light fw-bold">Pasukan Tuan Rumah:</td>
+                    <td class="text-primary fw-bold">@Model.HomeFaculty?.FacultyCode - @Model.HomeFaculty?.FacultyName</td>
+                    <td class="table-light fw-bold">Pasukan Pelawat:</td>
+                    <td class="text-danger fw-bold">@Model.AwayFaculty?.FacultyCode - @Model.AwayFaculty?.FacultyName</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Final Score Showcase Box -->
+        <div class="p-3 border border-2 border-dark rounded mb-4 text-center bg-light">
+            <div class="small fw-bold text-uppercase text-muted mb-1" style="letter-spacing: 1px;">Keputusan Rasmi Akhir / Official Result</div>
+            <div class="row align-items-center">
+                <div class="col-5 text-end">
+                    <span class="fs-5 fw-bold text-primary">@Model.HomeFaculty?.FacultyCode</span>
+                    <div class="small text-muted">Pengurus: @Model.HomeFaculty?.ManagerName</div>
+                </div>
+                <div class="col-2">
+                    <div class="display-5 fw-bold font-monospace border border-dark bg-white px-2 py-1 rounded">
+                        @Model.HomeTotalScore - @Model.AwayTotalScore
+                    </div>
+                </div>
+                <div class="col-5 text-start">
+                    <span class="fs-5 fw-bold text-danger">@Model.AwayFaculty?.FacultyCode</span>
+                    <div class="small text-muted">Pengurus: @Model.AwayFaculty?.ManagerName</div>
+                </div>
+            </div>
+            <div class="mt-2 fw-bold text-dark">
+                Status Pemenang: 
+                @if (homeWinner)
+                {
+                    <span class="text-success"><i class="bi bi-trophy-fill me-1"></i> @Model.HomeFaculty?.FacultyCode DIIYTIHARKAN SEBAGAI PEMENANG</span>
+                }
+                else if (awayWinner)
+                {
+                    <span class="text-success"><i class="bi bi-trophy-fill me-1"></i> @Model.AwayFaculty?.FacultyCode DIIYTIHARKAN SEBAGAI PEMENANG</span>
+                }
+                else
+                {
+                    <span class="text-secondary">PERLAWANAN BERAKHIR DENGAN KEPUTUSAN SERI (DRAW)</span>
+                }
+            </div>
+        </div>
+
+        <!-- Period / Set Breakdown Table -->
+        <div class="mb-4">
+            <div class="fw-bold text-uppercase mb-1 small" style="letter-spacing: 0.5px;">Pecahan Mata Mengikut Tempoh / Set Breakdown:</div>
+            <table class="table table-bordered border-dark table-sm text-center mb-0" style="font-size: 13px;">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start" style="width: 250px;">Pasukan / Fakulti</th>
+                        @if (Model.MatchScores.Any())
+                        {
+                            foreach (var p in Model.MatchScores.OrderBy(p => p.PeriodNumber))
+                            {
+                                <th>@(scoringType == "Sets" ? $"Set {p.PeriodNumber}" : scoringType == "Goals" ? $"Separuh {p.PeriodNumber}" : $"Suku {p.PeriodNumber}")</th>
+                            }
+                        }
+                        else
+                        {
+                            <th>Mata Penuh</th>
+                        }
+                        <th class="table-secondary text-dark fw-bold" style="width: 120px;">Jumlah Akhir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-start fw-bold text-primary">@Model.HomeFaculty?.FacultyCode (@Model.HomeFaculty?.FacultyName)</td>
+                        @if (Model.MatchScores.Any())
+                        {
+                            foreach (var p in Model.MatchScores.OrderBy(p => p.PeriodNumber))
+                            {
+                                <td class="font-monospace fw-bold">@p.HomePoints</td>
+                            }
+                        }
+                        else
+                        {
+                            <td class="font-monospace fw-bold">@Model.HomeTotalScore</td>
+                        }
+                        <td class="table-secondary fw-bold fs-6 font-monospace">@Model.HomeTotalScore</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-bold text-danger">@Model.AwayFaculty?.FacultyCode (@Model.AwayFaculty?.FacultyName)</td>
+                        @if (Model.MatchScores.Any())
+                        {
+                            foreach (var p in Model.MatchScores.OrderBy(p => p.PeriodNumber))
+                            {
+                                <td class="font-monospace fw-bold">@p.AwayPoints</td>
+                            }
+                        }
+                        else
+                        {
+                            <td class="font-monospace fw-bold">@Model.AwayTotalScore</td>
+                        }
+                        <td class="table-secondary fw-bold fs-6 font-monospace">@Model.AwayTotalScore</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Official Team Lineups Grid -->
+        <div class="row g-3 mb-4">
+            <!-- Home Squad -->
+            <div class="col-6">
+                <div class="border border-dark p-2 h-100">
+                    <div class="fw-bold border-bottom border-dark pb-1 text-uppercase small d-flex justify-content-between">
+                        <span>Senarai Atlet: @Model.HomeFaculty?.FacultyCode</span>
+                        <span class="text-muted">Home</span>
+                    </div>
+                    <table class="table table-sm table-borderless mb-0 mt-1" style="font-size: 11.5px;">
+                        <thead>
+                            <tr class="text-muted border-bottom">
+                                <th>#</th>
+                                <th>Nama Atlet</th>
+                                <th>No. Matrik</th>
+                                <th>Posisi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.HomeFaculty?.Players != null && Model.HomeFaculty.Players.Any())
+                            {
+                                int idx = 1;
+                                foreach (var p in Model.HomeFaculty.Players)
+                                {
+                                    <tr>
+                                        <td>@(idx++)</td>
+                                        <td class="fw-bold">@p.FullName</td>
+                                        <td><code>@p.MatricNo</code></td>
+                                        <td>@p.PositionRole</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-muted fst-italic">Roster rasmi belum didaftarkan.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Away Squad -->
+            <div class="col-6">
+                <div class="border border-dark p-2 h-100">
+                    <div class="fw-bold border-bottom border-dark pb-1 text-uppercase small d-flex justify-content-between">
+                        <span>Senarai Atlet: @Model.AwayFaculty?.FacultyCode</span>
+                        <span class="text-muted">Away</span>
+                    </div>
+                    <table class="table table-sm table-borderless mb-0 mt-1" style="font-size: 11.5px;">
+                        <thead>
+                            <tr class="text-muted border-bottom">
+                                <th>#</th>
+                                <th>Nama Atlet</th>
+                                <th>No. Matrik</th>
+                                <th>Posisi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.AwayFaculty?.Players != null && Model.AwayFaculty.Players.Any())
+                            {
+                                int idx = 1;
+                                foreach (var p in Model.AwayFaculty.Players)
+                                {
+                                    <tr>
+                                        <td>@(idx++)</td>
+                                        <td class="fw-bold">@p.FullName</td>
+                                        <td><code>@p.MatricNo</code></td>
+                                        <td>@p.PositionRole</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-muted fst-italic">Roster rasmi belum didaftarkan.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Official Verification / Sign-off Box -->
+        <div class="border border-dark p-3 mt-2" style="font-size: 12px;">
+            <div class="fw-bold text-uppercase mb-3 small text-center text-decoration-underline">
+                PERAKUAN &amp; PENGESAHAN KEPUTUSAN RASMI KEJOHANAN
+            </div>
+            <div class="row text-center">
+                <div class="col-4">
+                    <div style="height: 50px;"></div>
+                    <div class="border-top border-dark pt-1">
+                        <strong>Tandatangan Pengadil / Scorekeeper</strong>
+                        <div class="text-muted small">@(Model.Scorekeeper?.FullName ?? "Pegawai Rasmi UTHM")</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="height: 50px;"></div>
+                    <div class="border-top border-dark pt-1">
+                        <strong>Tandatangan Pengurus @Model.HomeFaculty?.FacultyCode</strong>
+                        <div class="text-muted small">@Model.HomeFaculty?.ManagerName</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="height: 50px;"></div>
+                    <div class="border-top border-dark pt-1">
+                        <strong>Tandatangan Pengurus @Model.AwayFaculty?.FacultyCode</strong>
+                        <div class="text-muted small">@Model.AwayFaculty?.ManagerName</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4 pt-2 border-top border-secondary text-muted text-center" style="font-size: 10px;">
+                <div class="col-12">
+                    Dokumen ini dijana secara automatik oleh <strong>Inter-Faculty Varsity Tracker UTHM</strong> pada @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"). Sebarang bantahan hendaklah dikemukakan dalam tempoh 2 jam selepas tamat perlawanan.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        header, footer, nav, .d-print-none, .navbar, .breadcrumb {
+            display: none !important;
+        }
+        body {
+            background-color: white !important;
+            color: black !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .container, .container-fluid {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        #printableArea {
+            border: 2px solid black !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 20px !important;
+        }
+    }
+</style>
+

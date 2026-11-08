@@ -1,0 +1,36 @@
+@model VarsityTracker.Core.Models.User
+@{
+    ViewData["Title"] = "Delete User";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-x-fill me-2"></i>Delete User Account</h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                <p class="fs-5 text-dark">Are you sure you want to delete user <strong>@Model.FullName</strong>?</p>
+                <div class="alert alert-warning text-start">
+                    <div><strong>Matric / Staff ID:</strong> @Model.MatricNo</div>
+                    <div><strong>Email:</strong> @Model.Email</div>
+                    <div><strong>Role:</strong> @Model.Role</div>
+                </div>
+
+                <form asp-action="Delete" method="post" class="mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="UserId" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-trash-fill me-1"></i> Confirm Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,90 @@
+@model VarsityTracker.Core.Models.Sport
+@{
+    ViewData["Title"] = "Sport Details - " + Model.SportName;
+}
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0 fw-bold"><i class="bi bi-trophy text-warning me-2"></i>@Model.SportName</h4>
+        <span class="badge bg-primary fs-6">@Model.ScoringType Scoring</span>
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded border">
+                    <small class="text-muted text-uppercase fw-semibold">Discipline ID</small>
+                    <div class="fs-5 fw-bold text-dark">#@Model.SportId</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded border">
+                    <small class="text-muted text-uppercase fw-semibold">Scoring Mechanism</small>
+                    <div class="fs-5 fw-bold text-primary">@Model.ScoringType</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded border">
+                    <small class="text-muted text-uppercase fw-semibold">Max Periods / Sets</small>
+                    <div class="fs-5 fw-bold text-dark">@Model.MaxPeriods</div>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-calendar-event me-2"></i>Associated Match Fixtures</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fixture Date</th>
+                        <th>Home Faculty</th>
+                        <th>Away Faculty</th>
+                        <th>Venue</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Matches == null || !Model.Matches.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-3 text-muted">
+                                No fixtures scheduled for this sport yet.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var m in Model.Matches)
+                        {
+                            <tr>
+                                <td>@m.MatchDate.ToString("dd MMM yyyy, h:mm tt")</td>
+                                <td class="fw-semibold">@m.HomeFaculty?.FacultyCode</td>
+                                <td class="fw-semibold">@m.AwayFaculty?.FacultyCode</td>
+                                <td>@m.Venue?.VenueName</td>
+                                <td>
+                                    <span class="badge @(m.Status == "Live" ? "bg-danger" : m.Status == "Completed" ? "bg-success" : "bg-primary")">
+                                        @m.Status
+                                    </span>
+                                </td>
+                                <td class="fw-bold">@m.HomeTotalScore - @m.AwayTotalScore</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Sports
+            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.SportId" class="btn btn-warning">
+                    <i class="bi bi-pencil me-1"></i> Edit Sport
+                </a>
+            }
+        </div>
+    </div>
+</div>
+

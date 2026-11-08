@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:VarsityTracker.Mobile.Models"
+             x:Class="VarsityTracker.Mobile.Views.MatchesPage"
+             Title="Varsity Live &amp; Schedule"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Header Banner -->
+        <Border Grid.Row="0" BackgroundColor="#0D2B45" Padding="16, 12" StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                <Border Grid.Column="0" BackgroundColor="White" Padding="4" WidthRequest="48" HeightRequest="48" StrokeShape="RoundRectangle 8" StrokeThickness="0" VerticalOptions="Center">
+                    <Image Source="uthm_logo.png" Aspect="AspectFit" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="UTHM VARSITY CHAMPIONSHIP" TextColor="#FFC107" FontSize="11" FontAttributes="Bold" CharacterSpacing="1" />
+                        <!-- Live Auto-Sync Status Badge -->
+                        <Border x:Name="SyncStatusBorder" Grid.Column="1" BackgroundColor="#10B981" Padding="8, 2" StrokeShape="RoundRectangle 10" StrokeThickness="0">
+                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                <Label x:Name="LblSyncStatus" Text="● Live Sync" TextColor="White" FontSize="10" FontAttributes="Bold" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+                    <Label Text="Live Scores &amp; Fixtures" TextColor="White" FontSize="19" FontAttributes="Bold" />
+                    <Label x:Name="LblHeaderSubtitle" Text="Real-time scores auto-sync every 1s directly with web backend." TextColor="#CED4DA" FontSize="11" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Main Body -->
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, *">
+            <!-- Offline Reconnect Banner (only shown if disconnected) -->
+            <Border x:Name="OfflineNoticeBorder" Grid.Row="0" BackgroundColor="#FEF3C7" Stroke="#FCD34D" StrokeShape="RoundRectangle 8" Padding="12, 8" Margin="12, 6, 12, 0" IsVisible="False">
+                <Grid ColumnDefinitions="*, Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                        <Label Text="⚠️ Offline / Using Cached Matches" FontSize="11" FontAttributes="Bold" TextColor="#B45309" />
+                        <Label x:Name="LblOfflineReason" Text="Cannot reach web server at http://localhost:5299." FontSize="10" TextColor="#78350F" />
+                    </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                        <Button Text="Diagnostic ℹ️" Clicked="OnDiagnosticClicked" BackgroundColor="#FEF08A" TextColor="#854D0E" FontSize="10" FontAttributes="Bold" HeightRequest="28" Padding="8, 0" CornerRadius="6" VerticalOptions="Center" />
+                        <Button Text="Set URL ⚙️" Clicked="OnSetUrlClicked" BackgroundColor="#E2E8F0" TextColor="#334155" FontSize="10" FontAttributes="Bold" HeightRequest="28" Padding="8, 0" CornerRadius="6" VerticalOptions="Center" />
+                        <Button Text="Retry 🔄" Clicked="OnRetryConnectionClicked" BackgroundColor="#D97706" TextColor="White" FontSize="10" FontAttributes="Bold" HeightRequest="28" Padding="10, 0" CornerRadius="6" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Standings Quick Link Banner -->
+            <Border Grid.Row="1" BackgroundColor="#EFF6FF" Stroke="#BFDBFE" StrokeShape="RoundRectangle 8" Padding="12, 8" Margin="12, 8, 12, 2">
+                <Grid ColumnDefinitions="*, Auto">
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="🏆" FontSize="16" VerticalOptions="Center" />
+                        <VerticalStackLayout Spacing="0">
+                            <Label Text="Inter-Faculty Championship" FontSize="12" FontAttributes="Bold" TextColor="#1D4ED8" />
+                            <Label Text="View live table &amp; points ranking" FontSize="10" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                    <Button Grid.Column="1" Text="Standings →" Clicked="OnViewStandingsClicked" BackgroundColor="#2563EB" TextColor="White" FontSize="11" FontAttributes="Bold" HeightRequest="32" Padding="12, 0" CornerRadius="6" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Horizontal Sport Filter Pills -->
+            <ScrollView Grid.Row="2" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="12, 4, 12, 4">
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <Button Text="All Sports" x:Name="BtnFilterAll" Clicked="OnFilterSportClicked" CommandParameter="All" BackgroundColor="#0D2B45" TextColor="White" FontSize="11" FontAttributes="Bold" CornerRadius="16" HeightRequest="30" Padding="12, 0" />
+                    <Button Text="⚽ Futsal" x:Name="BtnFilterFutsal" Clicked="OnFilterSportClicked" CommandParameter="Futsal" BackgroundColor="#E2E8F0" TextColor="#1E293B" FontSize="11" FontAttributes="Bold" CornerRadius="16" HeightRequest="30" Padding="12, 0" />
+                    <Button Text="🏸 Badminton" x:Name="BtnFilterBadminton" Clicked="OnFilterSportClicked" CommandParameter="Badminton" BackgroundColor="#E2E8F0" TextColor="#1E293B" FontSize="11" FontAttributes="Bold" CornerRadius="16" HeightRequest="30" Padding="12, 0" />
+                    <Button Text="🏀 Basketball" x:Name="BtnFilterBasketball" Clicked="OnFilterSportClicked" CommandParameter="Basketball" BackgroundColor="#E2E8F0" TextColor="#1E293B" FontSize="11" FontAttributes="Bold" CornerRadius="16" HeightRequest="30" Padding="12, 0" />
+                    <Button Text="🏐 Volleyball" x:Name="BtnFilterVolleyball" Clicked="OnFilterSportClicked" CommandParameter="Volleyball" BackgroundColor="#E2E8F0" TextColor="#1E293B" FontSize="11" FontAttributes="Bold" CornerRadius="16" HeightRequest="30" Padding="12, 0" />
+                    <Button Text="🥋 Sepak Takraw" x:Name="BtnFilterTakraw" Clicked="OnFilterSportClicked" CommandParameter="Sepak Takraw" BackgroundColor="#E2E8F0" TextColor="#1E293B" FontSize="11" FontAttributes="Bold" CornerRadius="16" HeightRequest="30" Padding="12, 0" />
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- Match List -->
+            <RefreshView Grid.Row="3" x:Name="MatchesRefreshView" Refreshing="OnRefreshMatches">
+            <CollectionView x:Name="MatchesCollectionView" SelectionMode="None" Margin="12,8">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:MatchItem">
+                        <Border Margin="0, 6" Padding="14" StrokeShape="RoundRectangle 10" BackgroundColor="White" Stroke="#E9ECEF" StrokeThickness="1">
+                            <VerticalStackLayout Spacing="8">
+                                <!-- Sport Badge & Status -->
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" Text="{Binding Sport}" FontSize="12" TextColor="#0D2B45" FontAttributes="Bold" />
+                                    <Border Grid.Column="1" BackgroundColor="{Binding StatusColor}" Padding="8,2" StrokeShape="RoundRectangle 6" StrokeThickness="0">
+                                        <Label Text="{Binding Status}" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                                    </Border>
+                                </Grid>
+
+                                <!-- Teams & Scores Box -->
+                                <Border BackgroundColor="#F1F5F9" Padding="12, 10" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                                    <Grid ColumnDefinitions="*, Auto, *">
+                                        <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                            <Label Text="{Binding HomeFaculty}" FontSize="16" FontAttributes="Bold" TextColor="#0D6EFD" HorizontalTextAlignment="Center" />
+                                            <Label Text="{Binding HomeScore}" FontSize="24" FontAttributes="Bold" TextColor="#212529" HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="1" Text="VS" FontSize="14" TextColor="#6C757D" VerticalOptions="Center" Margin="10,0" />
+
+                                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                            <Label Text="{Binding AwayFaculty}" FontSize="16" FontAttributes="Bold" TextColor="#DC3545" HorizontalTextAlignment="Center" />
+                                            <Label Text="{Binding AwayScore}" FontSize="24" FontAttributes="Bold" TextColor="#212529" HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Live Commentary / Match Event Ticker -->
+                                <Border BackgroundColor="#FEF3C7" Stroke="#FCD34D" StrokeThickness="1" StrokeShape="RoundRectangle 6" Padding="8, 4" IsVisible="{Binding HasLatestEvent}">
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <Label Text="📢" FontSize="11" VerticalOptions="Center" />
+                                        <Label Text="{Binding LatestEvent}" FontSize="11" TextColor="#92400E" FontAttributes="Bold" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+
+                                <!-- Venue & Time -->
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="📍" FontSize="12" />
+                                    <Label Text="{Binding Venue}" FontSize="12" TextColor="#495057" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="⏰" FontSize="12" />
+                                    <Label Text="{Binding FormattedDate}" FontSize="12" TextColor="#6C757D" />
+                                </HorizontalStackLayout>
+
+                                <!-- Action Buttons: More Details & Set Alert -->
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="0, 4, 0, 0">
+                                    <Button Grid.Column="0"
+                                            Text="📊 View Details →" 
+                                            Clicked="OnViewMatchDetailsClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#0D2B45"
+                                            TextColor="White"
+                                            FontSize="11"
+                                            FontAttributes="Bold"
+                                            CornerRadius="8"
+                                            HeightRequest="36" />
+
+                                    <Button Grid.Column="1"
+                                            Text="🔔 Set Alert" 
+                                            Clicked="OnSetReminderClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#EEF2FF"
+                                            TextColor="#4338CA"
+                                            FontSize="11"
+                                            FontAttributes="Bold"
+                                            CornerRadius="8"
+                                            HeightRequest="36" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        </Grid>
+    </Grid>
+
+</ContentPage>
+

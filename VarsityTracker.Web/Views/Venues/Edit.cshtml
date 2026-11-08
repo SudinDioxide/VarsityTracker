@@ -1,0 +1,126 @@
+@model VarsityTracker.Core.Models.Venue
+@{
+    ViewData["Title"] = "Edit Venue Facility";
+}
+
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Venues &amp; Facilities</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit @Model.VenueName</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <div class="card shadow border-0">
+            <!-- Modern Header -->
+            <div class="form-card-header d-flex align-items-center gap-3">
+                <div class="form-card-header-icon shadow-sm">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <div>
+                    <h4 class="mb-1 fw-bold">Edit Sports Facility</h4>
+                    <p class="mb-0 text-white-50 small">Module 3 (CRUD) &bull; Update venue parameters and match scheduling availability</p>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="VenueId" />
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 rounded-3 mb-4"></div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4 p-3 bg-light rounded-3 border">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-2" style="font-size: 11px;">Current Facility Picture</small>
+                            <img src="@Model.ImageUrl" alt="@Model.VenueName" class="rounded-3 shadow-sm border" style="max-height: 180px; width: 100%; object-fit: cover;" />
+                        </div>
+                    }
+
+                    <!-- Venue Name Input -->
+                    <div class="mb-4">
+                        <label asp-for="VenueName" class="form-label fw-semibold">
+                            <i class="bi bi-building me-1 text-primary"></i> Venue / Facility Name
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                            <input asp-for="VenueName" class="form-control" placeholder="e.g. Main Stadium UTHM, Court A - Badminton" required />
+                        </div>
+                        <span asp-validation-for="VenueName" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <!-- Location Input -->
+                    <div class="mb-4">
+                        <label asp-for="Location" class="form-label fw-semibold">
+                            <i class="bi bi-pin-map-fill me-1 text-danger"></i> Campus Location &amp; Zone
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo"></i></span>
+                            <input asp-for="Location" class="form-control" placeholder="e.g. Kompleks Sukan UTHM, Kolej Kediaman Perwira" required />
+                        </div>
+                        <span asp-validation-for="Location" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <!-- Facility Picture Input -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-image-fill me-1 text-info"></i> Update Facility Picture / Photo
+                        </label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-upload"></i></span>
+                                    <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                                </div>
+                                <small class="text-muted">Upload replacement photo (.jpg, .png)</small>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                    <input asp-for="ImageUrl" class="form-control" placeholder="Or edit image URL" />
+                                </div>
+                                <small class="text-muted">Or enter direct photo URL</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operational Status Card with Switch -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-shield-check me-1 text-success"></i> Operational Status
+                        </label>
+                        <div class="status-toggle-card d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="fw-bold text-dark">Fixture Scheduling Availability</div>
+                                <small class="text-muted">Turn off to temporarily take this facility offline for maintenance or hazard repair.</small>
+                            </div>
+                            <div class="form-check form-switch m-0 ps-0">
+                                <input asp-for="IsAvailable" class="form-check-input ms-0" type="checkbox" id="availSwitch" role="switch" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25" />
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Venues
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 py-2">
+                            <i class="bi bi-check2-circle me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

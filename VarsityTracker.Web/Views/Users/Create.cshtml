@@ -1,0 +1,73 @@
+@model VarsityTracker.Core.Models.User
+@{
+    ViewData["Title"] = "Register User Account";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i>Create New User Account</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="MatricNo" class="form-label fw-semibold"></label>
+                            <input asp-for="MatricNo" class="form-control" placeholder="e.g. AD002, SK003, AI220055" required />
+                            <span asp-validation-for="MatricNo" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Role" class="form-label fw-semibold">Role Authority</label>
+                            <select asp-for="Role" class="form-select" required>
+                                <option value="Admin">Admin (Full System CRUD & Fixtures)</option>
+                                <option value="Scorekeeper">Scorekeeper (Live Scoring Console)</option>
+                                <option value="Student">Student (Schedule, Alerts, Feedback)</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" placeholder="Full Official Name" required />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="name@uthm.edu.my" required />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FacultyId" class="form-label fw-semibold">Faculty Affiliation (Optional for Admins/Officials)</label>
+                        <select asp-for="FacultyId" class="form-select" asp-items="ViewBag.Faculties">
+                            <option value="">-- None / General Campus Official --</option>
+                        </select>
+                        <span asp-validation-for="FacultyId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="PasswordHash" class="form-label fw-semibold">Initial Password</label>
+                        <input asp-for="PasswordHash" class="form-control" type="password" required />
+                        <span asp-validation-for="PasswordHash" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Users
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-save me-1"></i> Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:VarsityTracker.Mobile.Models"
+             x:Class="VarsityTracker.Mobile.Views.RemindersPage"
+             Title="My Match Reminders"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Header Banner -->
+        <Border Grid.Row="0" BackgroundColor="#0D2B45" Padding="16, 12" StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                <Border Grid.Column="0" BackgroundColor="White" Padding="4" WidthRequest="46" HeightRequest="46" StrokeShape="RoundRectangle 8" StrokeThickness="0" VerticalOptions="Center">
+                    <Image Source="uthm_logo.png" Aspect="AspectFit" WidthRequest="38" HeightRequest="38" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Label Text="MOBILE CRUD #2 • UTHM SPORTS" TextColor="#FFC107" FontSize="11" FontAttributes="Bold" CharacterSpacing="1" />
+                    <Label Text="Personal Match Alerts" TextColor="White" FontSize="19" FontAttributes="Bold" />
+                    <Label Text="Manage notification lead times and saved match fixtures." TextColor="#CED4DA" FontSize="11" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Reminders List -->
+        <RefreshView Grid.Row="1" x:Name="RemindersRefreshView" Refreshing="OnRefreshReminders">
+            <CollectionView x:Name="RemindersCollectionView" SelectionMode="None" Margin="12,8">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8" Margin="0, 50">
+                        <Label Text="🔔" FontSize="40" HorizontalTextAlignment="Center" />
+                        <Label Text="No Active Reminders" FontSize="18" FontAttributes="Bold" TextColor="#495057" HorizontalTextAlignment="Center" />
+                        <Label Text="Tap 'Set Alert' on any match in the 'Live &amp; Matches' tab to save it here." 
+                               FontSize="13" TextColor="#6C757D" HorizontalTextAlignment="Center" MaxLines="2" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ReminderItem">
+                        <Border Margin="0, 6" Padding="14" StrokeShape="RoundRectangle 10" BackgroundColor="White" Stroke="#E9ECEF" StrokeThickness="1">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" Text="{Binding Sport}" FontSize="12" TextColor="#0D6EFD" FontAttributes="Bold" />
+                                    <Border Grid.Column="1" BackgroundColor="#FEF3C7" Padding="8,2" StrokeShape="RoundRectangle 6" StrokeThickness="0">
+                                        <Label Text="{Binding LeadTimeDisplay}" TextColor="#92400E" FontSize="11" FontAttributes="Bold" />
+                                    </Border>
+                                </Grid>
+
+                                <Label Text="{Binding FixtureTitle}" FontSize="17" FontAttributes="Bold" TextColor="#212529" />
+                                
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="📍" FontSize="12" />
+                                    <Label Text="{Binding Venue}" FontSize="12" TextColor="#495057" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="⏰" FontSize="12" />
+                                    <Label Text="{Binding FormattedTime}" FontSize="12" TextColor="#6C757D" />
+                                </HorizontalStackLayout>
+
+                                <!-- CRUD Action Buttons (Update & Delete) -->
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="0, 4, 0, 0">
+                                    <Button Grid.Column="0" Text="✏️ Change Time" 
+                                            Clicked="OnEditReminderClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#F3F4F6"
+                                            TextColor="#1F2937"
+                                            FontSize="12"
+                                            FontAttributes="Bold"
+                                            CornerRadius="6"
+                                            HeightRequest="36" />
+
+                                    <Button Grid.Column="1" Text="🗑️ Remove Alert" 
+                                            Clicked="OnDeleteReminderClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#FEE2E2"
+                                            TextColor="#991B1B"
+                                            FontSize="12"
+                                            FontAttributes="Bold"
+                                            CornerRadius="6"
+                                            HeightRequest="36" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>
+

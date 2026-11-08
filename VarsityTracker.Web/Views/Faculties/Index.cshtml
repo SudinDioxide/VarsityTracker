@@ -1,0 +1,95 @@
+@model IEnumerable<VarsityTracker.Core.Models.Faculty>
+@{
+    ViewData["Title"] = "Faculties & Teams";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-mortarboard text-primary me-2"></i>Faculties & Team Directories</h2>
+        <p class="text-muted mb-0">Module 2 (CRUD) - Manage participating university faculties, athletic squads, and sports leadership</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Players" asp-action="Index" class="btn btn-outline-primary">
+            <i class="bi bi-people me-1"></i> View All Players
+        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Register New Faculty
+            </a>
+        }
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Search by faculty code or name (e.g. FSKTM, FKEE)..." />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100">Filter</button>
+            </div>
+            @if (ViewData["CurrentSearch"] != null)
+            {
+                <div class="col-md-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100">Reset</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100 card-hover shadow-sm border-0 border-top border-4 border-primary">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge badge-subtle-primary fs-6 px-3 py-1.5 fw-bold">@item.FacultyCode</span>
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-people-fill text-primary me-1"></i><strong>@item.Players.Count</strong> Athletes
+                        </span>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-2">@item.FacultyName</h5>
+                    
+                    <div class="p-2.5 rounded-3 bg-light border mb-3 small">
+                        <span class="text-muted d-block" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Team Management</span>
+                        <div class="fw-semibold text-dark">
+                            <i class="bi bi-person-badge text-primary me-1"></i>
+                            @(string.IsNullOrEmpty(item.ManagerName) ? "Unassigned Manager" : item.ManagerName)
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between small text-muted">
+                        <span><i class="bi bi-trophy text-warning me-1"></i>Championship Contender</span>
+                        <span><i class="bi bi-shield-check text-success me-1"></i>Active Squad</span>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light border-top d-flex justify-content-between align-items-center px-4 py-2.5">
+                    <a asp-action="Details" asp-route-id="@item.FacultyId" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-eye me-1"></i> Roster &amp; Fixtures
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@item.FacultyId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.FacultyId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

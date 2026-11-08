@@ -1,0 +1,92 @@
+@model VarsityTracker.Core.Models.Sport
+@{
+    ViewData["Title"] = "Edit Sport Rules";
+}
+
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Sports &amp; Rules</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit @Model.SportName</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <div class="card shadow border-0">
+            <!-- Modern Header -->
+            <div class="form-card-header d-flex align-items-center gap-3">
+                <div class="form-card-header-icon shadow-sm">
+                    <i class="bi bi-dribbble"></i>
+                </div>
+                <div>
+                    <h4 class="mb-1 fw-bold">Edit Sport Ruleset</h4>
+                    <p class="mb-0 text-white-50 small">Module 1 (CRUD) &bull; Configure scoring engine and maximum period parameters</p>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="SportId" />
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 rounded-3 mb-4"></div>
+                    }
+
+                    <div class="mb-4">
+                        <label asp-for="SportName" class="form-label fw-semibold">
+                            <i class="bi bi-tag-fill me-1 text-primary"></i> Sport / Discipline Title
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-trophy"></i></span>
+                            <input asp-for="SportName" class="form-control" required />
+                        </div>
+                        <span asp-validation-for="SportName" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ScoringType" class="form-label fw-semibold">
+                            <i class="bi bi-sliders me-1 text-success"></i> Official Scoring Engine Type
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calculator"></i></span>
+                            <select asp-for="ScoringType" class="form-select">
+                                <option value="Goals">⚽ Goals (e.g. Futsal, Football, Hockey)</option>
+                                <option value="Sets">🏸 Sets (e.g. Badminton, Volleyball, Tennis, Sepak Takraw)</option>
+                                <option value="Points">🏀 Points (e.g. Basketball, Netball, Rugby)</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="ScoringType" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="MaxPeriods" class="form-label fw-semibold">
+                            <i class="bi bi-clock-history me-1 text-warning"></i> Maximum Periods / Sets / Halves
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                            <input asp-for="MaxPeriods" class="form-control" type="number" min="1" max="10" />
+                        </div>
+                        <small class="text-muted mt-1 d-block">Determines how many period score breakdown columns are allocated on the Live Scoring Console.</small>
+                        <span asp-validation-for="MaxPeriods" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25" />
+
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Sports List
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 py-2">
+                            <i class="bi bi-check2-circle me-1"></i> Update Rules
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,113 @@
+@model VarsityTracker.Core.Models.Match
+@{
+    ViewData["Title"] = "Schedule Match Fixture";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Match Fixtures</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Schedule Fixture</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header form-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-card-header-icon">
+                        <i class="bi bi-calendar-plus-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Schedule New Match Fixture</h4>
+                        <p class="mb-0 small text-white-50">Provision tournament fixture, court assignments, and referee officials</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert badge-subtle-danger py-2 mb-3"></div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="HomeFacultyId" class="form-label">Home Faculty</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-shield-fill text-primary"></i></span>
+                                <select asp-for="HomeFacultyId" class="form-select" asp-items="ViewBag.Faculties" required>
+                                    <option value="">-- Select Home Team --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="HomeFacultyId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="AwayFacultyId" class="form-label">Away Faculty</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-shield-fill text-danger"></i></span>
+                                <select asp-for="AwayFacultyId" class="form-select" asp-items="ViewBag.Faculties" required>
+                                    <option value="">-- Select Away Team --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="AwayFacultyId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="SportId" class="form-label">Sport Discipline</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-trophy-fill text-warning"></i></span>
+                                <select asp-for="SportId" class="form-select" asp-items="ViewBag.Sports" required>
+                                    <option value="">-- Select Sport Discipline --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="SportId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="VenueId" class="form-label">Campus Facility</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill text-danger"></i></span>
+                                <select asp-for="VenueId" class="form-select" asp-items="ViewBag.Venues" required>
+                                    <option value="">-- Select Available Facility --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="VenueId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="MatchDate" class="form-label">Date & Kickoff Time</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-clock-fill text-secondary"></i></span>
+                                <input asp-for="MatchDate" class="form-control" type="datetime-local" value="@Model.MatchDate.ToString("yyyy-MM-ddTHH:mm")" required />
+                            </div>
+                            <span asp-validation-for="MatchDate" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ScorekeeperId" class="form-label">Match Official / Scorekeeper</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-badge-fill text-info"></i></span>
+                                <select asp-for="ScorekeeperId" class="form-select" asp-items="ViewBag.Scorekeepers">
+                                    <option value="">-- Optional: Assign Later --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="ScorekeeperId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Schedule
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="bi bi-calendar-check me-1"></i> Confirm & Publish Fixture
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

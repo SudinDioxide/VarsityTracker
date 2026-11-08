@@ -1,0 +1,75 @@
+@model VarsityTracker.Core.Models.Venue
+@{
+    ViewData["Title"] = "Decommission Venue";
+}
+
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Venues &amp; Facilities</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Decommission @Model.VenueName</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow border-0">
+            <!-- Modern Header with Warning theme -->
+            <div class="card-header bg-danger text-white py-3 px-4 d-flex align-items-center gap-3" style="background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%) !important;">
+                <div class="form-card-header-icon bg-white bg-opacity-20 text-white shadow-sm">
+                    <i class="bi bi-trash3-fill"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1 fw-bold text-white">Decommission Sports Venue</h5>
+                    <p class="mb-0 text-white-50 small">Module 3 (CRUD) &bull; Permanent removal of facility from championship registry</p>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5 text-center">
+                <div class="mb-4">
+                    <span class="p-3 bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex mb-3">
+                        <i class="bi bi-exclamation-octagon fs-1"></i>
+                    </span>
+                    <h4 class="fw-bold text-dark">Confirm Venue Deletion</h4>
+                    <p class="text-muted">Are you certain you wish to delete and remove this sports ground from the active system?</p>
+                </div>
+
+                <div class="p-3 rounded-3 bg-light border text-start mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Facility Name:</span>
+                        <strong class="text-dark">@Model.VenueName</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Campus Location:</span>
+                        <span class="text-dark">@Model.Location</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Operational Status:</span>
+                        <span class="badge @(Model.IsAvailable ? "bg-success" : "bg-danger")">
+                            @(Model.IsAvailable ? "Available" : "Maintenance")
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted small">Associated Fixtures:</span>
+                        <span class="badge bg-secondary">@(Model.Matches?.Count ?? 0) Matches</span>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="VenueId" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4 py-2">
+                            <i class="bi bi-trash3-fill me-1"></i> Confirm Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

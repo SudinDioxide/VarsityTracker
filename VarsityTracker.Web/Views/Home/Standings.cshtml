@@ -1,0 +1,301 @@
+@model List<VarsityTracker.Web.Controllers.FacultyStandingViewModel>
+@{
+    ViewData["Title"] = "Inter-Faculty Championship Standings & Medal Tally";
+    var top1 = Model.FirstOrDefault(s => s.Rank == 1);
+    var top2 = Model.FirstOrDefault(s => s.Rank == 2);
+    var top3 = Model.FirstOrDefault(s => s.Rank == 3);
+}
+
+<div id="standingsContainer">
+    <!-- Breadcrumb & Header -->
+    <nav aria-label="breadcrumb" class="mb-3 d-print-none">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Championship Standings</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+        <div class="card-header form-card-header py-4 px-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                        <img src="~/images/uthm-logo.png" alt="UTHM Crest" height="36" class="bg-white p-1 rounded shadow-sm" />
+                        <span class="badge bg-warning text-dark fw-bold px-3 py-1">UTHM SUKIPT 2026/2027</span>
+                        <span class="badge bg-white bg-opacity-25 text-white">Theme: S.P.O.R.T.S</span>
+                    </div>
+                    <h2 class="fw-bold text-white mb-1"><i class="bi bi-trophy-fill text-warning me-2"></i>Inter-Faculty Championship Standings</h2>
+                    <p class="text-white-50 mb-0 small">
+                        Official cumulative standings, medal tallies, and points table across all university sports disciplines.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0 d-print-none">
+                    <div class="d-flex gap-2 justify-content-lg-end flex-wrap">
+                        <button type="button" class="btn btn-warning fw-bold text-dark px-3 shadow-sm" id="btnStadiumMode" onclick="toggleStadiumMode()">
+                            <i class="bi bi-display me-1"></i> Stadium Mode
+                        </button>
+                        <button type="button" class="btn btn-outline-light px-3" onclick="window.print()">
+                            <i class="bi bi-printer me-1"></i> Print / PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Sub-bar -->
+        <div class="card-body bg-light border-bottom py-3 px-4 d-print-none">
+            <div class="row g-3 text-center text-md-start">
+                <div class="col-6 col-md-3">
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Competing Faculties</small>
+                    <div class="fs-5 fw-bold text-dark">@Model.Count Faculties</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Completed Fixtures</small>
+                    <div class="fs-5 fw-bold text-primary">@ViewBag.TotalCompleted Matches</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total Goals / Points</small>
+                    <div class="fs-5 fw-bold text-success font-monospace">@ViewBag.TotalGoals Points</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Sports Disciplines</small>
+                    <div class="fs-5 fw-bold text-info">@ViewBag.TotalDisciplines Disciplines</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 3 Championship Podium Cards -->
+    <div class="row g-3 mb-4">
+        <!-- 2nd Place: Silver -->
+        <div class="col-md-4 order-2 order-md-1">
+            @if (top2 != null)
+            {
+                <div class="card h-100 shadow-sm border-0 border-top border-4 border-secondary text-center p-3" style="background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);">
+                    <div class="fs-1 mb-1">🥈</div>
+                    <span class="badge bg-secondary px-3 py-1 fw-bold align-self-center mb-2">2ND PLACE &bull; SILVER</span>
+                    <h4 class="fw-bold mb-0 text-dark">@top2.FacultyCode</h4>
+                    <p class="small text-muted mb-2 text-truncate" title="@top2.FacultyName">@top2.FacultyName</p>
+                    <div class="display-6 fw-bold text-primary font-monospace my-1">@top2.Points <span class="fs-6 text-muted fw-normal">Pts</span></div>
+                    <div class="small text-muted">@top2.Won Wins &bull; @top2.Played Matches &bull; Diff: @(top2.PointDifference > 0 ? "+" : "")@top2.PointDifference</div>
+                    <div class="small text-muted mt-2 border-top pt-2"><i class="bi bi-person me-1"></i>Mgr: @top2.ManagerName</div>
+                </div>
+            }
+        </div>
+
+        <!-- 1st Place: Gold (Hero) -->
+        <div class="col-md-4 order-1 order-md-2">
+            @if (top1 != null)
+            {
+                <div class="card h-100 shadow border-2 border-warning text-center p-4 position-relative" style="background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%); transform: scale(1.03);">
+                    <div class="position-absolute top-0 end-0 p-3">
+                        <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-star-fill"></i> LEADER</span>
+                    </div>
+                    <div class="fs-1 mb-1 animate__animated animate__tada">🥇</div>
+                    <span class="badge bg-warning text-dark px-4 py-1 fs-6 fw-bold align-self-center mb-2 shadow-sm">1ST PLACE &bull; GOLD</span>
+                    <h3 class="fw-bold mb-1 text-dark">@top1.FacultyCode</h3>
+                    <p class="small text-muted mb-2 text-truncate" title="@top1.FacultyName">@top1.FacultyName</p>
+                    <div class="display-5 fw-bold text-dark font-monospace my-1">@top1.Points <span class="fs-5 text-muted fw-normal">Pts</span></div>
+                    <div class="small text-dark fw-semibold">@top1.Won Wins &bull; @top1.Played Matches &bull; Diff: @(top1.PointDifference > 0 ? "+" : "")@top1.PointDifference</div>
+                    <div class="small text-muted mt-3 border-top border-warning pt-2"><i class="bi bi-person-fill text-warning me-1"></i>Manager: @top1.ManagerName</div>
+                </div>
+            }
+        </div>
+
+        <!-- 3rd Place: Bronze -->
+        <div class="col-md-4 order-3 order-md-3">
+            @if (top3 != null)
+            {
+                <div class="card h-100 shadow-sm border-0 border-top border-4 border-danger text-center p-3" style="background: linear-gradient(180deg, #f8fafc 0%, #fff1f2 100%);">
+                    <div class="fs-1 mb-1">🥉</div>
+                    <span class="badge bg-danger bg-opacity-75 px-3 py-1 fw-bold align-self-center mb-2 text-white">3RD PLACE &bull; BRONZE</span>
+                    <h4 class="fw-bold mb-0 text-dark">@top3.FacultyCode</h4>
+                    <p class="small text-muted mb-2 text-truncate" title="@top3.FacultyName">@top3.FacultyName</p>
+                    <div class="display-6 fw-bold text-primary font-monospace my-1">@top3.Points <span class="fs-6 text-muted fw-normal">Pts</span></div>
+                    <div class="small text-muted">@top3.Won Wins &bull; @top3.Played Matches &bull; Diff: @(top3.PointDifference > 0 ? "+" : "")@top3.PointDifference</div>
+                    <div class="small text-muted mt-2 border-top pt-2"><i class="bi bi-person me-1"></i>Mgr: @top3.ManagerName</div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Main Standings Table Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-table me-2 text-primary"></i>Official Points Table</h5>
+            <div class="d-flex align-items-center gap-2 d-print-none">
+                <input type="text" id="facultySearch" class="form-control form-control-sm" placeholder="Search faculty..." style="max-width: 200px;" onkeyup="filterStandingsTable()">
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center" id="standingsTable">
+                <thead class="table-light text-muted small text-uppercase">
+                    <tr>
+                        <th style="width: 70px;">Rank</th>
+                        <th class="text-start" style="min-width: 220px;">Faculty</th>
+                        <th title="Played">P</th>
+                        <th title="Won" class="text-success">W</th>
+                        <th title="Drawn" class="text-secondary">D</th>
+                        <th title="Lost" class="text-danger">L</th>
+                        <th title="Points For" class="d-none d-md-table-cell">PF</th>
+                        <th title="Points Against" class="d-none d-md-table-cell">PA</th>
+                        <th title="Point Difference">+/-</th>
+                        <th title="Recent Form" style="min-width: 140px;">Form</th>
+                        <th title="Total Championship Points" class="table-primary text-primary fw-bold" style="width: 90px;">PTS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr class="faculty-row @(s.Rank <= 3 ? "fw-semibold" : "")">
+                            <td>
+                                @if (s.Rank == 1)
+                                {
+                                    <span class="badge bg-warning text-dark px-2 py-1"><i class="bi bi-trophy-fill"></i> 1</span>
+                                }
+                                else if (s.Rank == 2)
+                                {
+                                    <span class="badge bg-secondary text-white px-2 py-1"><i class="bi bi-award-fill"></i> 2</span>
+                                }
+                                else if (s.Rank == 3)
+                                {
+                                    <span class="badge bg-danger bg-opacity-75 text-white px-2 py-1"><i class="bi bi-award"></i> 3</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fw-bold">@s.Rank</span>
+                                }
+                            </td>
+                            <td class="text-start">
+                                <a asp-controller="Faculties" asp-action="Details" asp-route-id="@s.FacultyId" class="fw-bold text-decoration-none text-dark faculty-name-link">
+                                    @s.FacultyCode
+                                </a>
+                                <div class="small text-muted faculty-fullname">@s.FacultyName</div>
+                            </td>
+                            <td>@s.Played</td>
+                            <td class="text-success fw-bold">@s.Won</td>
+                            <td class="text-muted">@s.Drawn</td>
+                            <td class="text-danger">@s.Lost</td>
+                            <td class="small text-muted d-none d-md-table-cell font-monospace">@s.PointsFor</td>
+                            <td class="small text-muted d-none d-md-table-cell font-monospace">@s.PointsAgainst</td>
+                            <td class="font-monospace @(s.PointDifference > 0 ? "text-success fw-bold" : s.PointDifference < 0 ? "text-danger" : "text-muted")">
+                                @(s.PointDifference > 0 ? "+" : "")@s.PointDifference
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-1">
+                                    @if (!s.RecentForm.Any())
+                                    {
+                                        <span class="badge bg-light text-muted border">-</span>
+                                    }
+                                    @foreach (var outcome in s.RecentForm)
+                                    {
+                                        @if (outcome == "W")
+                                        {
+                                            <span class="badge bg-success" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px;" title="Win">W</span>
+                                        }
+                                        else if (outcome == "D")
+                                        {
+                                            <span class="badge bg-warning text-dark" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px;" title="Draw">D</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px;" title="Loss">L</span>
+                                        }
+                                    }
+                                </div>
+                            </td>
+                            <td class="table-primary fw-bold fs-5 text-primary font-monospace">@s.Points</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-light py-3 px-4 small text-muted d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span>
+                <i class="bi bi-info-circle me-1 text-primary"></i>
+                <strong>Tournament Rule:</strong> Win = 3 Pts &bull; Draw = 1 Pt &bull; Loss = 0 Pts. Tied ranks broken by Point Difference (+/-), then Points For (PF).
+            </span>
+            <div class="d-flex gap-2">
+                <a asp-controller="Matches" asp-action="Index" class="text-decoration-none fw-semibold">View Fixtures &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Stadium Projector Display Mode */
+    .stadium-mode {
+        background-color: #0b1320 !important;
+        color: #ffffff !important;
+        padding: 24px;
+        min-height: 100vh;
+    }
+    .stadium-mode .card {
+        background-color: #152238 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+    }
+    .stadium-mode .card-header,
+    .stadium-mode .card-footer {
+        background-color: #0f1a2e !important;
+        color: #ffffff !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    .stadium-mode .table {
+        color: #ffffff !important;
+    }
+    .stadium-mode .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    .stadium-mode .faculty-name-link {
+        color: #60a5fa !important;
+    }
+    .stadium-mode .table-light {
+        background-color: #1e293b !important;
+        color: #cbd5e1 !important;
+    }
+    .stadium-mode .table-primary {
+        background-color: #1e3a5f !important;
+        color: #93c5fd !important;
+    }
+</style>
+
+@section Scripts {
+<script>
+    let isStadiumMode = false;
+    function toggleStadiumMode() {
+        isStadiumMode = !isStadiumMode;
+        const container = document.getElementById('standingsContainer');
+        const btn = document.getElementById('btnStadiumMode');
+
+        if (isStadiumMode) {
+            document.body.classList.add('stadium-mode');
+            btn.innerHTML = '<i class="bi bi-display me-1"></i> Exit Stadium Mode';
+            btn.classList.remove('btn-warning');
+            btn.classList.add('btn-light');
+        } else {
+            document.body.classList.remove('stadium-mode');
+            btn.innerHTML = '<i class="bi bi-display me-1"></i> Stadium Mode';
+            btn.classList.remove('btn-light');
+            btn.classList.add('btn-warning');
+        }
+    }
+
+    function filterStandingsTable() {
+        const query = document.getElementById('facultySearch').value.toLowerCase();
+        const rows = document.querySelectorAll('.faculty-row');
+
+        rows.forEach(row => {
+            const code = row.querySelector('.faculty-name-link')?.textContent.toLowerCase() || '';
+            const full = row.querySelector('.faculty-fullname')?.textContent.toLowerCase() || '';
+            if (code.includes(query) || full.includes(query)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+}
+

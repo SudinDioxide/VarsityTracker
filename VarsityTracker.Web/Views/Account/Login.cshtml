@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Official Web Portal Sign In";
+}
+
+<div class="row justify-content-center mt-3">
+    <div class="col-md-5 col-lg-4">
+        <div class="text-center mb-3">
+            <img src="~/images/uthm-logo.png" alt="UTHM Official Logo" height="64" class="bg-white p-2 rounded-3 shadow-sm border" />
+        </div>
+        <div class="card shadow-sm border-0">
+            <div class="card-header form-card-header text-center">
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <div class="form-card-header-icon">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <div class="text-start">
+                        <h5 class="mb-0 fw-bold text-white">Staff Sign In</h5>
+                        <small class="text-white-50">UTHM Inter-Faculty Varsity Tracker</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert badge-subtle-danger py-2 mb-3">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div><i class="bi bi-exclamation-triangle-fill me-1"></i>@error.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <form asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Staff / Official ID or Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                            <input name="identifier" class="form-control" placeholder="e.g. AD001, SK001, admin@uthm.edu.my" required autofocus />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="Enter password" required />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Web Portal
+                    </button>
+                </form>
+
+                <div class="alert alert-light border small mt-3 mb-0 text-center" style="border-radius: 10px;">
+                    <i class="bi bi-phone-fill text-primary me-1"></i>
+                    <strong>Student Notice:</strong> Students log in via the <strong>Varsity Tracker Mobile App</strong>. Web access is reserved for Administrators and Match Scorekeepers.
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- Demonstration Quick-Login Toolbar (Admin & Scorekeeper only) -->
+                <div class="text-center">
+                    <span class="badge bg-secondary mb-2">Evaluator Demo Quick-Login</span>
+                    <p class="small text-muted mb-2">Click to instantly test role separation:</p>
+                    <div class="d-grid gap-2">
+                        <form asp-action="QuickLogin" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="role" value="Admin" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-start">
+                                <i class="bi bi-person-fill-gear me-1"></i> <strong>Admin</strong> (AD001 - Full System & Fixtures)
+                            </button>
+                        </form>
+                        <form asp-action="QuickLogin" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="role" value="Scorekeeper" />
+                            <button type="submit" class="btn btn-outline-warning btn-sm w-100 text-start text-dark">
+                                <i class="bi bi-stopwatch me-1"></i> <strong>Scorekeeper</strong> (SK001 - Real-Time AJAX Console)
+                            </button>
+                        </form>
+                        <div class="p-2 bg-light border rounded text-muted small text-start">
+                            <i class="bi bi-phone me-1 text-primary"></i> <strong>Student Logins</strong> (AI220015, CI220098) are restricted to the <strong>Mobile Client</strong>.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

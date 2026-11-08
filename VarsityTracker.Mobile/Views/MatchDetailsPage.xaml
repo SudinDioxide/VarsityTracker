@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:VarsityTracker.Mobile.Models"
+             x:Class="VarsityTracker.Mobile.Views.MatchDetailsPage"
+             Title="Match Fixture Details"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Top Institutional Header -->
+        <Border Grid.Row="0" BackgroundColor="#0D2B45" Padding="16, 12" StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+                <Button Grid.Column="0" Text="←" Clicked="OnBackClicked" BackgroundColor="#1E3A5F" TextColor="White" FontSize="16" FontAttributes="Bold" WidthRequest="40" HeightRequest="40" CornerRadius="20" Padding="0" VerticalOptions="Center" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                    <Label Text="UTHM VARSITY CHAMPIONSHIP" TextColor="#FFC107" FontSize="10" FontAttributes="Bold" CharacterSpacing="1" />
+                    <Label x:Name="LblHeaderTitle" Text="Match Details" TextColor="White" FontSize="17" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+                <Border Grid.Column="2" x:Name="StatusBadgeBorder" BackgroundColor="#0D6EFD" Padding="10, 4" StrokeShape="RoundRectangle 8" StrokeThickness="0" VerticalOptions="Center">
+                    <Label x:Name="LblStatus" Text="Scheduled" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Main Content with RefreshView -->
+        <RefreshView Grid.Row="1" x:Name="DetailRefreshView" Refreshing="OnRefreshDetail">
+            <ScrollView Padding="14, 12">
+                <VerticalStackLayout Spacing="14">
+                    <!-- Loading Indicator -->
+                    <ActivityIndicator x:Name="LoadingSpinner" IsRunning="True" IsVisible="True" Color="#0D2B45" HorizontalOptions="Center" Margin="0, 20" />
+
+                    <!-- Scoreboard Hero Card -->
+                    <Border x:Name="ScoreboardCard" BackgroundColor="#0D2B45" Padding="16" StrokeShape="RoundRectangle 14" StrokeThickness="0">
+                        <VerticalStackLayout Spacing="10">
+                            <!-- Sport Discipline & Date -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label x:Name="LblSport" Text="Futsal" TextColor="#FFC107" FontSize="12" FontAttributes="Bold" />
+                                <Label Grid.Column="1" x:Name="LblDate" Text="Today • 4:00 PM" TextColor="#CED4DA" FontSize="11" />
+                            </Grid>
+
+                            <!-- Scorebox -->
+                            <Border BackgroundColor="#1E3A5F" Padding="14, 12" StrokeShape="RoundRectangle 10" StrokeThickness="0">
+                                <Grid ColumnDefinitions="*, Auto, *">
+                                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="2">
+                                        <Label x:Name="LblHomeCode" Text="FSKTM" FontSize="19" FontAttributes="Bold" TextColor="#60A5FA" HorizontalTextAlignment="Center" />
+                                        <Label x:Name="LblHomeName" Text="Fakulti Sains Komputer" FontSize="10" TextColor="#CED4DA" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" MaxLines="2" />
+                                        <Label x:Name="LblHomeScore" Text="0" FontSize="36" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                                        <Label Text="VS" FontSize="15" FontAttributes="Bold" TextColor="#94A3B8" HorizontalTextAlignment="Center" />
+                                        <Label x:Name="LblScoringType" Text="Goals" FontSize="10" TextColor="#CBD5E1" HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="2">
+                                        <Label x:Name="LblAwayCode" Text="FKEE" FontSize="19" FontAttributes="Bold" TextColor="#F87171" HorizontalTextAlignment="Center" />
+                                        <Label x:Name="LblAwayName" Text="Fakulti Kejuruteraan Elektrik" FontSize="10" TextColor="#CED4DA" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" MaxLines="2" />
+                                        <Label x:Name="LblAwayScore" Text="0" FontSize="36" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <!-- Manager info -->
+                            <Grid ColumnDefinitions="*, *">
+                                <Label x:Name="LblHomeMgr" Text="Mgr: Dr. Radzi" TextColor="#94A3B8" FontSize="10" HorizontalTextAlignment="Start" />
+                                <Label Grid.Column="1" x:Name="LblAwayMgr" Text="Mgr: Ir. Kamaruzaman" TextColor="#94A3B8" FontSize="10" HorizontalTextAlignment="End" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Alert / Reminder Action Button -->
+                    <Button Text="🔔 Set Match Alert (Mobile CRUD #2)"
+                            Clicked="OnSetAlertClicked"
+                            BackgroundColor="#EEF2FF"
+                            TextColor="#4338CA"
+                            FontSize="13"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="44" />
+
+                    <!-- Period Breakdown Card -->
+                    <Border BackgroundColor="White" Padding="14" Stroke="#E2E8F0" StrokeShape="RoundRectangle 12">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="📊 Period / Set Breakdown" FontSize="13" FontAttributes="Bold" TextColor="#0D2B45" />
+                            <VerticalStackLayout x:Name="PeriodScoresLayout" Spacing="6">
+                                <Label Text="No period breakdown logged yet." FontSize="11" TextColor="#64748B" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Live Commentary & Official Events Feed -->
+                    <Border BackgroundColor="White" Padding="14" Stroke="#E2E8F0" StrokeShape="RoundRectangle 12">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Text="📢 Match Commentary &amp; Events" FontSize="13" FontAttributes="Bold" TextColor="#0D2B45" />
+                                <Label Grid.Column="1" x:Name="LblEventCount" Text="0 Events" FontSize="11" TextColor="#64748B" />
+                            </Grid>
+                            <VerticalStackLayout x:Name="EventsListLayout" Spacing="8">
+                                <Label Text="No match events logged yet." FontSize="11" TextColor="#64748B" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Venue & Official Information Card -->
+                    <Border BackgroundColor="White" Padding="14" Stroke="#E2E8F0" StrokeShape="RoundRectangle 12">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="📍 Facility &amp; Match Officials" FontSize="13" FontAttributes="Bold" TextColor="#0D2B45" />
+
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10">
+                                <Label Text="🏟️" FontSize="16" VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1">
+                                    <Label x:Name="LblVenueName" Text="Main Stadium UTHM" FontSize="12" FontAttributes="Bold" TextColor="#1E293B" />
+                                    <Label x:Name="LblVenueLocation" Text="Kompleks Sukan UTHM" FontSize="11" TextColor="#64748B" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10">
+                                <Label Text="👤" FontSize="16" VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1">
+                                    <Label Text="Match Official / Referee" FontSize="10" TextColor="#64748B" />
+                                    <Label x:Name="LblScorekeeper" Text="Official UTHM Referee" FontSize="12" FontAttributes="Bold" TextColor="#1E293B" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Registered Squad Rosters -->
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <!-- Home Roster -->
+                        <Border Grid.Column="0" BackgroundColor="White" Padding="12" Stroke="#BFDBFE" StrokeShape="RoundRectangle 10">
+                            <VerticalStackLayout Spacing="6">
+                                <Label x:Name="LblHomeRosterTitle" Text="Home Squad" FontSize="12" FontAttributes="Bold" TextColor="#1D4ED8" />
+                                <VerticalStackLayout x:Name="HomePlayersLayout" Spacing="4">
+                                    <Label Text="No roster registered." FontSize="10" TextColor="#94A3B8" />
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Away Roster -->
+                        <Border Grid.Column="1" BackgroundColor="White" Padding="12" Stroke="#FECACA" StrokeShape="RoundRectangle 10">
+                            <VerticalStackLayout Spacing="6">
+                                <Label x:Name="LblAwayRosterTitle" Text="Away Squad" FontSize="12" FontAttributes="Bold" TextColor="#DC2626" />
+                                <VerticalStackLayout x:Name="AwayPlayersLayout" Spacing="4">
+                                    <Label Text="No roster registered." FontSize="10" TextColor="#94A3B8" />
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <BoxView HeightRequest="20" Color="Transparent" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>
+

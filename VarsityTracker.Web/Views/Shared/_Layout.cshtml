@@ -1,0 +1,213 @@
+@using System.Security.Claims
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - UTHM Varsity Tracker</title>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        .pulse-dot {
+            animation: pulse-animation 1.5s infinite;
+        }
+        @@keyframes pulse-animation {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        .navbar-brand-custom {
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #0d2b45 !important;
+        }
+        .nav-link {
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            color: #0d6efd !important;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <!-- Top Institutional Bar -->
+        <div class="bg-dark text-white py-1 px-3 small border-bottom border-secondary d-none d-md-block">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+                <span class="d-flex align-items-center">
+                    <img src="~/images/uthm-logo.png" alt="UTHM Crest" height="20" class="me-2 bg-white px-1 py-0.5 rounded shadow-sm" />
+                    <strong>Universiti Tun Hussein Onn Malaysia</strong> &bull; BIE33103 .NET Programming (Sem 1 2026/2027)
+                </span>
+                <span>
+                    <i class="bi bi-trophy-fill text-warning me-1"></i> Inter-Faculty Sports Championship &bull; Theme S.P.O.R.T.S
+                </span>
+            </div>
+        </div>
+
+        <!-- Main Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand navbar-brand-custom d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/uthm-logo.png" alt="UTHM Logo" height="38" class="d-inline-block align-text-top" />
+                    <span class="border-start ps-2 d-flex flex-column">
+                        <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.5px; line-height: 1.1;">Varsity<span class="text-primary">Tracker</span></span>
+                        <span class="text-muted" style="font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px;">UNIVERSITI TUN HUSSEIN ONN MALAYSIA</span>
+                    </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Matches" asp-action="Index">
+                                <i class="bi bi-calendar3 me-1"></i> Fixtures
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Standings">
+                                <i class="bi bi-trophy text-warning me-1"></i> Standings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger fw-semibold" asp-controller="LiveScore" asp-action="Index">
+                                <i class="bi bi-broadcast me-1 pulse-dot"></i> Live Center
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="rostersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-people me-1"></i> Rosters & Teams
+                            </a>
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="rostersDropdown">
+                                <li><a class="dropdown-item" asp-controller="Faculties" asp-action="Index"><i class="bi bi-mortarboard me-2"></i>Faculties Directory</a></li>
+                                <li><a class="dropdown-item" asp-controller="Players" asp-action="Index"><i class="bi bi-person-lines-fill me-2"></i>Student Athlete Rosters</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Venues" asp-action="Index">
+                                <i class="bi bi-geo-alt me-1"></i> Venues
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Sports" asp-action="Index">
+                                <i class="bi bi-sliders me-1"></i> Sports Rules
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Feedback" asp-action="Index">
+                                <i class="bi bi-shield-exclamation me-1"></i> Safety Tickets
+                            </a>
+                        </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-danger fw-bold" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-gear-fill me-1"></i> Admin RBAC
+                                </a>
+                                <ul class="dropdown-menu shadow-sm" aria-labelledby="adminDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Users" asp-action="Index"><i class="bi bi-people-fill me-2"></i>User Accounts & Roles</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Matches" asp-action="Create"><i class="bi bi-calendar-plus me-2"></i>Schedule Match Fixture</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Sports" asp-action="Create"><i class="bi bi-plus-circle me-2"></i>Add Sport Discipline</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Venues" asp-action="Create"><i class="bi bi-geo-alt-fill me-2"></i>Register Sports Venue</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- User Account / Login Bar -->
+                    <div class="d-flex align-items-center gap-2">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="dropdown">
+                                <button class="btn btn-outline-dark dropdown-toggle btn-sm d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle fs-6 me-2 text-primary"></i>
+                                    <span>@User.Identity.Name</span>
+                                    <span class="badge @(User.IsInRole("Admin") ? "bg-danger" : User.IsInRole("Scorekeeper") ? "bg-warning text-dark" : "bg-info text-dark") ms-2">
+                                        @User.FindFirstValue(ClaimTypes.Role)
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li class="dropdown-header small text-muted">
+                                        Matric: @User.FindFirstValue("MatricNo")
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-2">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item rounded text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-sm px-3">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In / Switch Role
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid px-lg-5 my-4 flex-grow-1">
+        <!-- Toast / Alert notifications -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="bg-white border-top py-3 mt-auto text-muted">
+        <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center flex-wrap gap-2 small">
+            <div class="d-flex align-items-center gap-2">
+                <img src="~/images/uthm-logo.png" alt="UTHM Logo" height="26" />
+                <span>&copy; 2026 - <strong>Inter-Faculty Varsity Tracker</strong> &bull; Fakulti Sains Komputer dan Teknologi Maklumat (FSKTM), UTHM</span>
+            </div>
+            <div>
+                <span class="badge bg-light text-dark border me-2">ASP.NET Core MVC</span>
+                <span class="badge bg-light text-dark border me-2">EF Core</span>
+                <span class="badge bg-light text-dark border me-2">AJAX Live Score</span>
+                <span class="badge bg-light text-dark border">IIS Localhost Compatible</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

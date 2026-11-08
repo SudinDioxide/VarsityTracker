@@ -1,0 +1,36 @@
+@model VarsityTracker.Core.Models.Faculty
+@{
+    ViewData["Title"] = "Delete Faculty";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Faculty Entry</h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                <p class="fs-5 text-dark">Are you sure you want to remove <strong>@Model.FacultyName (@Model.FacultyCode)</strong> from varsity competition?</p>
+                <div class="alert alert-warning text-start">
+                    <div><strong>Faculty Code:</strong> @Model.FacultyCode</div>
+                    <div><strong>Manager:</strong> @Model.ManagerName</div>
+                    <div><strong>Registered Players:</strong> @Model.Players?.Count</div>
+                </div>
+
+                <form asp-action="Delete" method="post" class="mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="FacultyId" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-trash-fill me-1"></i> Confirm Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

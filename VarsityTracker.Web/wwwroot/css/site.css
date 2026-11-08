@@ -1,0 +1,393 @@
+/* ========================================================
+   UTHM Inter-Faculty Varsity Tracker - Master Design System
+   Theme: S.P.O.R.T.S • Course: BIE33103 .NET Programming
+   ======================================================== */
+
+:root {
+  --primary-navy: #0d2b45;
+  --secondary-navy: #173b5c;
+  --accent-gold: #f59e0b;
+  --accent-gold-hover: #d97706;
+  --brand-blue: #2563eb;
+  --brand-blue-hover: #1d4ed8;
+  --surface-bg: #f8fafc;
+  --card-bg: #ffffff;
+  --border-subtle: #e2e8f0;
+  --border-input: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --card-shadow-hover: 0 12px 30px -4px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+}
+
+html {
+  font-size: 14.5px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 15.5px;
+  }
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--surface-bg);
+  color: var(--text-main);
+  margin-bottom: 60px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-main);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* ========================================================
+   Cards & Glassmorphism
+   ======================================================== */
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--card-shadow) !important;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow-hover) !important;
+}
+
+.card-header {
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: #ffffff;
+  padding: 16px 22px;
+}
+
+/* Modern Header Gradients for Form Cards */
+.form-card-header {
+  background: linear-gradient(135deg, #0d2b45 0%, #1e3a5f 100%) !important;
+  color: #ffffff !important;
+  padding: 22px 28px !important;
+  border: none !important;
+}
+
+.form-card-header h4,
+.form-card-header h5,
+.form-card-header p {
+  color: #ffffff !important;
+}
+
+.form-card-header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  color: #ffc107;
+  flex-shrink: 0;
+}
+
+/* ========================================================
+   Form Inputs & Controls
+   ======================================================== */
+.form-label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #334155;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.form-control, .form-select {
+  border-radius: 10px;
+  border: 1px solid var(--border-input);
+  padding: 10px 14px;
+  font-size: 0.94rem;
+  color: var(--text-main);
+  background-color: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  outline: none;
+  background-color: #ffffff;
+}
+
+.input-group-text {
+  border-radius: 10px 0 0 10px;
+  background-color: #f1f5f9;
+  border: 1px solid var(--border-input);
+  border-right: none;
+  color: #64748b;
+  padding: 10px 14px;
+}
+
+.input-group .form-control {
+  border-radius: 0 10px 10px 0;
+}
+
+/* Status switch card container */
+.status-toggle-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.status-toggle-card:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.form-check-input {
+  width: 2.7em;
+  height: 1.45em;
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: #10b981;
+  border-color: #10b981;
+}
+
+/* ========================================================
+   Buttons
+   ======================================================== */
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 9px 18px;
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:hover {
+  transform: translateY(-1.5px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  border: 1px solid #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  border-color: #1e40af;
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  border: 1px solid #d97706;
+  color: #0f172a !important;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(245, 158, 11, 0.25);
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  color: #0f172a !important;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  border: 1px solid #b91c1c;
+  color: #ffffff;
+  box-shadow: 0 3px 12px rgba(220, 38, 38, 0.25);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+  border-color: #991b1b;
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  border: 1px solid #047857;
+  color: #ffffff;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.btn-outline-secondary {
+  border-color: #cbd5e1;
+  color: #475569;
+  background-color: #ffffff;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+/* ========================================================
+   Badges
+   ======================================================== */
+.badge {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 6px 11px;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+/* Subtitle status badges */
+.badge-subtle-success {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-subtle-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.badge-subtle-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-subtle-primary {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+/* ========================================================
+   Data Tables
+   ======================================================== */
+.table-container {
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  background-color: #ffffff;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.table tbody td {
+  padding: 14px 18px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* ========================================================
+   Hero Banner & Live Elements
+   ======================================================== */
+.hero-varsity-banner {
+  background-color: #0d2b45 !important;
+  background: linear-gradient(135deg, #0d2b45 0%, #173b5c 50%, #204c72 100%) !important;
+  color: #ffffff !important;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(13, 43, 69, 0.28);
+}
+
+.hero-varsity-banner h1,
+.hero-varsity-banner h2,
+.hero-varsity-banner h3,
+.hero-varsity-banner p,
+.hero-varsity-banner .lead {
+  color: #ffffff !important;
+}
+
+.hero-stats-box {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 12px;
+  padding: 18px;
+  backdrop-filter: blur(8px);
+}
+
+.hero-stat-card {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  border-radius: 10px;
+  padding: 12px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+}
+
+.pulse-dot {
+  animation: pulse-animation 1.5s infinite;
+}
+
+@keyframes pulse-animation {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Breadcrumb refinement */
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #94a3b8;
+}
+
+.breadcrumb-item a {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--brand-blue);
+}
+
+.breadcrumb-item.active {
+  color: #0f172a;
+  font-weight: 600;
+}

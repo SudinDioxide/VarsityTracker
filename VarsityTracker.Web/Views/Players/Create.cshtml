@@ -1,0 +1,104 @@
+@model VarsityTracker.Core.Models.Player
+@{
+    ViewData["Title"] = "Add Athlete";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Athlete Rosters</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Register Athlete</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header form-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-card-header-icon">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Register Athlete</h4>
+                        <p class="mb-0 small text-white-50">Enroll student into faculty squad roster with tactical position</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert badge-subtle-danger py-2 mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FacultyId" class="form-label">Faculty Squad</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-mortarboard-fill text-primary"></i></span>
+                            <select asp-for="FacultyId" class="form-select" asp-items="ViewBag.FacultyId" required>
+                                <option value="">-- Select Faculty Team --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="FacultyId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label">Athlete Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill text-secondary"></i></span>
+                            <input asp-for="FullName" class="form-control" placeholder="Athlete's Full Legal Name" required />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MatricNo" class="form-label">Student Matric Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-card-text text-secondary"></i></span>
+                            <input asp-for="MatricNo" class="form-control font-monospace text-uppercase" placeholder="e.g. AI220044" required />
+                        </div>
+                        <span asp-validation-for="MatricNo" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PositionRole" class="form-label">Playing Position / Role</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-shield-shaded text-warning"></i></span>
+                            <input asp-for="PositionRole" class="form-control" placeholder="e.g. Striker, Goalkeeper, Point Guard, Captain" required />
+                        </div>
+                        <span asp-validation-for="PositionRole" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Athlete Picture / Photo</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-upload"></i></span>
+                                    <input type="file" name="photoFile" class="form-control" accept="image/*" />
+                                </div>
+                                <small class="text-muted">Upload an image file (.jpg, .png)</small>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                    <input asp-for="PhotoUrl" class="form-control" placeholder="Or paste image URL (https://...)" />
+                                </div>
+                                <small class="text-muted">Or provide a web photo URL</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Rosters
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="bi bi-save me-1"></i> Register Athlete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

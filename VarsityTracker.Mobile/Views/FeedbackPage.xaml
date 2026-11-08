@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:VarsityTracker.Mobile.Models"
+             x:Class="VarsityTracker.Mobile.Views.FeedbackPage"
+             Title="Safety &amp; Defects"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Header Banner -->
+        <Border Grid.Row="0" BackgroundColor="#0D2B45" Padding="16, 12" StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                <Border Grid.Column="0" BackgroundColor="White" Padding="4" WidthRequest="46" HeightRequest="46" StrokeShape="RoundRectangle 8" StrokeThickness="0" VerticalOptions="Center">
+                    <Image Source="uthm_logo.png" Aspect="AspectFit" WidthRequest="38" HeightRequest="38" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Label Text="MOBILE CRUD #3 • UTHM SPORTS" TextColor="#FFC107" FontSize="11" FontAttributes="Bold" CharacterSpacing="1" />
+                    <Label Text="Venue Hazard &amp; Safety Tickets" TextColor="White" FontSize="19" FontAttributes="Bold" />
+                    <Label Text="Report broken nets, lighting failures, or damaged courts directly to UTHM Sports Division." TextColor="#CED4DA" FontSize="11" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Submit Report Button Bar -->
+        <Border Grid.Row="1" BackgroundColor="White" Padding="12, 10" Stroke="#E9ECEF" StrokeThickness="1">
+            <Button Text="➕ Submit New Hazard Report" 
+                    Clicked="OnNewReportClicked"
+                    BackgroundColor="#DC2626"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    CornerRadius="8"
+                    HeightRequest="42" />
+        </Border>
+
+        <!-- Feedback Tickets List -->
+        <RefreshView Grid.Row="2" x:Name="FeedbackRefreshView" Refreshing="OnRefreshFeedbacks">
+            <CollectionView x:Name="FeedbackCollectionView" SelectionMode="None" Margin="12,8">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8" Margin="0, 50">
+                        <Label Text="🛡️" FontSize="40" HorizontalTextAlignment="Center" />
+                        <Label Text="No Hazard Reports Filed" FontSize="18" FontAttributes="Bold" TextColor="#495057" HorizontalTextAlignment="Center" />
+                        <Label Text="Tap 'Submit New Hazard Report' above if you observe defects or hazards at campus facilities." 
+                               FontSize="13" TextColor="#6C757D" HorizontalTextAlignment="Center" MaxLines="2" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:FeedbackItem">
+                        <Border Margin="0, 6" Padding="14" StrokeShape="RoundRectangle 10" BackgroundColor="White" Stroke="#E9ECEF" StrokeThickness="1">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <HorizontalStackLayout Grid.Column="0" Spacing="6">
+                                        <Label Text="📍" FontSize="12" />
+                                        <Label Text="{Binding VenueName}" FontSize="12" TextColor="#0D2B45" FontAttributes="Bold" />
+                                    </HorizontalStackLayout>
+                                    <Border Grid.Column="1" BackgroundColor="{Binding StatusColor}" Padding="8,2" StrokeShape="RoundRectangle 6" StrokeThickness="0">
+                                        <Label Text="{Binding Status}" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                                    </Border>
+                                </Grid>
+
+                                <Label Text="{Binding Subject}" FontSize="16" FontAttributes="Bold" TextColor="#111827" />
+                                <Label Text="{Binding Details}" FontSize="13" TextColor="#4B5563" MaxLines="3" LineBreakMode="TailTruncation" />
+
+                                <Label Text="{Binding FormattedDate, StringFormat='Submitted: {0}'}" FontSize="11" TextColor="#9CA3AF" />
+
+                                <!-- CRUD Action Buttons (Update & Delete) -->
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="0, 4, 0, 0">
+                                    <Button Grid.Column="0" Text="✏️ Edit Details" 
+                                            Clicked="OnEditFeedbackClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#F3F4F6"
+                                            TextColor="#1F2937"
+                                            FontSize="12"
+                                            FontAttributes="Bold"
+                                            CornerRadius="6"
+                                            HeightRequest="36" />
+
+                                    <Button Grid.Column="1" Text="🗑️ Withdraw" 
+                                            Clicked="OnDeleteFeedbackClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#FEE2E2"
+                                            TextColor="#991B1B"
+                                            FontSize="12"
+                                            FontAttributes="Bold"
+                                            CornerRadius="6"
+                                            HeightRequest="36" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>
+

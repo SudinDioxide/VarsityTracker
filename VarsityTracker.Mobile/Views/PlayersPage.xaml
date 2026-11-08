@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:VarsityTracker.Mobile.Models"
+             x:Class="VarsityTracker.Mobile.Views.PlayersPage"
+             Title="Varsity Athletes"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+        <!-- Top Institutional Header Banner -->
+        <Border Grid.Row="0" BackgroundColor="#0D2B45" Padding="16, 12" StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                <Border Grid.Column="0" BackgroundColor="White" Padding="4" WidthRequest="48" HeightRequest="48" StrokeShape="RoundRectangle 8" StrokeThickness="0" VerticalOptions="Center">
+                    <Image Source="uthm_logo.png" Aspect="AspectFit" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="UTHM SUKIPT 2026/2027" TextColor="#FFC107" FontSize="11" FontAttributes="Bold" CharacterSpacing="1" />
+                        <Border Grid.Column="1" BackgroundColor="#F59E0B" Padding="8, 2" StrokeShape="RoundRectangle 10" StrokeThickness="0">
+                            <Label Text="Athletes Directory" TextColor="#0D2B45" FontSize="10" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+                    <Label Text="Varsity Athletes Roster" TextColor="White" FontSize="19" FontAttributes="Bold" />
+                    <Label Text="Registered varsity athletes representing faculty teams with tactical roles." TextColor="#CED4DA" FontSize="11" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Search Bar -->
+        <Border Grid.Row="1" BackgroundColor="White" Margin="12, 10, 12, 4" Padding="4, 0" Stroke="#CBD5E1" StrokeShape="RoundRectangle 10">
+            <SearchBar x:Name="PlayerSearchBar" 
+                       Placeholder="Search athlete by name, matric no, or role..." 
+                       TextChanged="OnSearchTextChanged"
+                       CancelButtonColor="#0D2B45"
+                       BackgroundColor="Transparent"
+                       FontSize="13" />
+        </Border>
+
+        <!-- Horizontal Faculty Filter Chips -->
+        <ScrollView Grid.Row="2" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Padding="12, 4, 12, 6">
+            <HorizontalStackLayout Spacing="8">
+                <Button Text="All Faculties" Clicked="OnFacultyFilterClicked" CommandParameter="" BackgroundColor="#0D2B45" TextColor="White" CornerRadius="16" HeightRequest="34" Padding="14, 0" FontSize="11" FontAttributes="Bold" />
+                <Button Text="FSKTM" Clicked="OnFacultyFilterClicked" CommandParameter="FSKTM" BackgroundColor="#E2E8F0" TextColor="#334155" CornerRadius="16" HeightRequest="34" Padding="14, 0" FontSize="11" FontAttributes="Bold" />
+                <Button Text="FKEE" Clicked="OnFacultyFilterClicked" CommandParameter="FKEE" BackgroundColor="#E2E8F0" TextColor="#334155" CornerRadius="16" HeightRequest="34" Padding="14, 0" FontSize="11" FontAttributes="Bold" />
+                <Button Text="FKMP" Clicked="OnFacultyFilterClicked" CommandParameter="FKMP" BackgroundColor="#E2E8F0" TextColor="#334155" CornerRadius="16" HeightRequest="34" Padding="14, 0" FontSize="11" FontAttributes="Bold" />
+                <Button Text="FKAAB" Clicked="OnFacultyFilterClicked" CommandParameter="FKAAB" BackgroundColor="#E2E8F0" TextColor="#334155" CornerRadius="16" HeightRequest="34" Padding="14, 0" FontSize="11" FontAttributes="Bold" />
+                <Button Text="FAST" Clicked="OnFacultyFilterClicked" CommandParameter="FAST" BackgroundColor="#E2E8F0" TextColor="#334155" CornerRadius="16" HeightRequest="34" Padding="14, 0" FontSize="11" FontAttributes="Bold" />
+                <Button Text="FPTP" Clicked="OnFacultyFilterClicked" CommandParameter="FPTP" BackgroundColor="#E2E8F0" TextColor="#334155" CornerRadius="16" HeightRequest="34" Padding="14, 0" FontSize="11" FontAttributes="Bold" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Main Athletes List with Pull-to-Refresh -->
+        <RefreshView Grid.Row="3" x:Name="PlayersRefreshView" Refreshing="OnRefreshPlayers">
+            <CollectionView x:Name="PlayersCollectionView" Margin="12, 4, 12, 12" SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8" Margin="0, 40">
+                        <Label Text="🏃‍♂️" FontSize="44" HorizontalOptions="Center" />
+                        <Label Text="No athletes found" FontSize="16" FontAttributes="Bold" TextColor="#475569" HorizontalOptions="Center" />
+                        <Label Text="Try adjusting your search query or faculty filter." FontSize="12" TextColor="#94A3B8" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:PlayerDto">
+                        <Border Margin="0, 4" Padding="12" StrokeShape="RoundRectangle 12" BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                                <!-- Athlete Avatar / Photo -->
+                                <Border Grid.Column="0" 
+                                        WidthRequest="56" 
+                                        HeightRequest="56" 
+                                        StrokeShape="RoundRectangle 28" 
+                                        Stroke="{Binding FacultyBadgeColor}" 
+                                        StrokeThickness="2" 
+                                        BackgroundColor="#F1F5F9"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="Center">
+                                    <Grid>
+                                        <!-- Fallback Initials Display -->
+                                        <Label Text="{Binding Initials}" 
+                                               TextColor="{Binding FacultyBadgeColor}" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center" />
+                                        <!-- Athlete Image if available -->
+                                        <Image Source="{Binding DisplayPhoto}" 
+                                               Aspect="AspectFill" 
+                                               WidthRequest="56" 
+                                               HeightRequest="56" 
+                                               IsVisible="{Binding HasPhoto}" />
+                                    </Grid>
+                                </Border>
+
+                                <!-- Details Stack -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                        <!-- Full Name -->
+                                        <Label Grid.Column="0" Text="{Binding FullName}" FontSize="15" FontAttributes="Bold" TextColor="#0D2B45" LineBreakMode="TailTruncation" />
+                                        <!-- Faculty Badge -->
+                                        <Border Grid.Column="1" BackgroundColor="{Binding FacultyBadgeColor}" Padding="8, 2" StrokeShape="RoundRectangle 6" StrokeThickness="0">
+                                            <Label Text="{Binding FacultyDisplay}" FontSize="10" FontAttributes="Bold" TextColor="White" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Tactical Role & Matric Number -->
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Border BackgroundColor="#EFF6FF" Padding="6, 2" StrokeShape="RoundRectangle 4" StrokeThickness="0">
+                                            <Label Text="{Binding PositionBadge}" FontSize="11" TextColor="#1D4ED8" FontAttributes="Bold" />
+                                        </Border>
+                                        <Label Text="{Binding MatricNo}" FontSize="11" TextColor="#64748B" VerticalOptions="Center" FontAttributes="Bold" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- Faculty Full Description -->
+                                    <Label Text="{Binding FacultyName}" FontSize="10" TextColor="#94A3B8" LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
+

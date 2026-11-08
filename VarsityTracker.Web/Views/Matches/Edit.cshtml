@@ -1,0 +1,126 @@
+@model VarsityTracker.Core.Models.Match
+@{
+    ViewData["Title"] = "Edit Fixture";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Match Fixtures</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Fixture #@Model.MatchId</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header form-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-card-header-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Edit Match Fixture Details</h4>
+                        <p class="mb-0 small text-white-50">Update schedule, court allocations, referee assignments, or manual score overrides</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="MatchId" />
+                    <div asp-validation-summary="ModelOnly" class="alert badge-subtle-danger py-2 mb-3"></div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="HomeFacultyId" class="form-label">Home Faculty</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-shield-fill text-primary"></i></span>
+                                <select asp-for="HomeFacultyId" class="form-select" asp-items="ViewBag.Faculties" required></select>
+                            </div>
+                            <span asp-validation-for="HomeFacultyId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="AwayFacultyId" class="form-label">Away Faculty</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-shield-fill text-danger"></i></span>
+                                <select asp-for="AwayFacultyId" class="form-select" asp-items="ViewBag.Faculties" required></select>
+                            </div>
+                            <span asp-validation-for="AwayFacultyId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="SportId" class="form-label">Sport Discipline</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-trophy-fill text-warning"></i></span>
+                                <select asp-for="SportId" class="form-select" asp-items="ViewBag.Sports" required></select>
+                            </div>
+                            <span asp-validation-for="SportId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="VenueId" class="form-label">Campus Facility</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill text-danger"></i></span>
+                                <select asp-for="VenueId" class="form-select" asp-items="ViewBag.Venues" required></select>
+                            </div>
+                            <span asp-validation-for="VenueId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="MatchDate" class="form-label">Date & Time</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-clock-fill text-secondary"></i></span>
+                                <input asp-for="MatchDate" class="form-control" type="datetime-local" value="@Model.MatchDate.ToString("yyyy-MM-ddTHH:mm")" required />
+                            </div>
+                            <span asp-validation-for="MatchDate" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ScorekeeperId" class="form-label">Match Official Scorekeeper</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-badge-fill text-info"></i></span>
+                                <select asp-for="ScorekeeperId" class="form-select" asp-items="ViewBag.Scorekeepers">
+                                    <option value="">-- Unassigned --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="ScorekeeperId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label asp-for="Status" class="form-label">Match Status</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Live">Live</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="HomeTotalScore" class="form-label">Home Final Score</label>
+                            <input asp-for="HomeTotalScore" class="form-control font-monospace" type="number" min="0" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="AwayTotalScore" class="form-label">Away Final Score</label>
+                            <input asp-for="AwayTotalScore" class="form-control font-monospace" type="number" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Schedule
+                        </a>
+                        <button type="submit" class="btn btn-warning px-4 fw-bold shadow-sm">
+                            <i class="bi bi-check-lg me-1"></i> Update Fixture
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,293 @@
+@{
+    ViewData["Title"] = "Varsity Dashboard & Live Center";
+    var liveMatches = ViewBag.LiveMatches as List<VarsityTracker.Core.Models.Match> ?? new List<VarsityTracker.Core.Models.Match>();
+    var upcomingMatches = ViewBag.UpcomingMatches as List<VarsityTracker.Core.Models.Match> ?? new List<VarsityTracker.Core.Models.Match>();
+    var standings = ViewBag.Standings as List<VarsityTracker.Web.Controllers.FacultyStandingViewModel> ?? new List<VarsityTracker.Web.Controllers.FacultyStandingViewModel>();
+}
+
+<!-- Hero / Welcome Banner -->
+<div class="p-4 p-md-5 mb-4 rounded-3 hero-varsity-banner shadow" style="background-color: #0d2b45 !important; background: linear-gradient(135deg, #0d2b45 0%, #173b5c 50%, #1e4a74 100%) !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.15) !important;">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                <img src="~/images/uthm-logo.png" alt="UTHM Official Crest" height="48" class="bg-white p-1 rounded-2 shadow-sm" />
+                <span class="badge bg-warning text-dark px-3 py-2 fw-bold" style="letter-spacing: 0.5px;">UTHM SUKIPT 2026/2027</span>
+                <span class="badge bg-white bg-opacity-25 text-white px-3 py-2 fw-semibold">Inter-Faculty Games</span>
+            </div>
+            <h1 class="display-5 fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Inter-Faculty Varsity Tracker</h1>
+            <p class="lead mb-4 text-white" style="opacity: 0.92; font-size: 1.08rem; max-width: 680px; line-height: 1.6;">
+                Official real-time sports championship management system for Universiti Tun Hussein Onn Malaysia. 
+                Tracking match schedules, player rosters, facility statuses, and real-time live match scores.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-controller="Matches" asp-action="Index" class="btn btn-warning fw-bold text-dark px-4 py-2 shadow-sm">
+                    <i class="bi bi-calendar3 me-1"></i> Full Match Fixtures
+                </a>
+                <a asp-controller="LiveScore" asp-action="Index" class="btn btn-danger fw-bold text-white px-4 py-2 shadow-sm">
+                    <i class="bi bi-broadcast me-1"></i> Live Scoring Center
+                </a>
+                <a asp-controller="Feedback" asp-action="Create" class="btn btn-outline-light text-white px-3 py-2 fw-semibold" style="border-color: rgba(255, 255, 255, 0.45); background-color: rgba(255, 255, 255, 0.1);">
+                    <i class="bi bi-shield-exclamation me-1 text-warning"></i> Report Venue Hazard
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 text-center mt-4 mt-lg-0">
+            <div class="hero-stats-box" style="background-color: rgba(255, 255, 255, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 14px; padding: 18px; backdrop-filter: blur(8px);">
+                <div class="fs-6 text-uppercase fw-bold mb-3 d-flex align-items-center justify-content-center gap-2" style="color: #ffd166; letter-spacing: 0.8px;">
+                    <i class="bi bi-bar-chart-fill"></i> Varsity Statistics
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="hero-stat-card" style="background-color: rgba(0, 0, 0, 0.4) !important; border-radius: 10px; padding: 12px 6px; border: 1px solid rgba(255, 255, 255, 0.12);">
+                            <div class="fs-3 fw-bold text-warning font-monospace">@ViewBag.TotalFaculties</div>
+                            <small class="text-white-50 fw-semibold text-uppercase" style="font-size: 11px;">Faculties</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hero-stat-card" style="background-color: rgba(0, 0, 0, 0.4) !important; border-radius: 10px; padding: 12px 6px; border: 1px solid rgba(255, 255, 255, 0.12);">
+                            <div class="fs-3 fw-bold text-info font-monospace">@ViewBag.TotalSports</div>
+                            <small class="text-white-50 fw-semibold text-uppercase" style="font-size: 11px;">Sports</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hero-stat-card" style="background-color: rgba(0, 0, 0, 0.4) !important; border-radius: 10px; padding: 12px 6px; border: 1px solid rgba(255, 255, 255, 0.12);">
+                            <div class="fs-3 fw-bold text-success font-monospace">@ViewBag.TotalPlayers</div>
+                            <small class="text-white-50 fw-semibold text-uppercase" style="font-size: 11px;">Athletes</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hero-stat-card" style="background-color: rgba(0, 0, 0, 0.4) !important; border-radius: 10px; padding: 12px 6px; border: 1px solid rgba(255, 255, 255, 0.12);">
+                            <div class="fs-3 fw-bold text-light font-monospace">@ViewBag.ActiveVenues</div>
+                            <small class="text-white-50 fw-semibold text-uppercase" style="font-size: 11px;">Active Venues</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Matches Bar (if any live) -->
+@if (liveMatches.Any())
+{
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h4 class="fw-bold text-danger mb-0">
+                <span class="spinner-grow spinner-grow-sm text-danger me-2" role="status"></span>
+                LIVE MATCHES IN PROGRESS
+            </h4>
+            <a asp-controller="LiveScore" asp-action="Index" class="btn btn-sm btn-outline-danger">Open Live Center</a>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            @foreach (var lm in liveMatches)
+            {
+                <div class="col">
+                    <div class="card border-danger shadow-sm h-100">
+                        <div class="card-header bg-danger text-white py-2 d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-trophy me-1"></i>@lm.Sport?.SportName</span>
+                            <span class="badge bg-white text-danger fw-bold">LIVE NOW</span>
+                        </div>
+                        <div class="card-body p-3 text-center">
+                            <div class="row align-items-center">
+                                <div class="col-5">
+                                    <h5 class="fw-bold text-primary mb-0">@lm.HomeFaculty?.FacultyCode</h5>
+                                    <div class="display-6 fw-bold text-dark mt-1">@lm.HomeTotalScore</div>
+                                </div>
+                                <div class="col-2">
+                                    <span class="text-muted fw-light">vs</span>
+                                </div>
+                                <div class="col-5">
+                                    <h5 class="fw-bold text-danger mb-0">@lm.AwayFaculty?.FacultyCode</h5>
+                                    <div class="display-6 fw-bold text-dark mt-1">@lm.AwayTotalScore</div>
+                                </div>
+                            </div>
+                            <div class="small text-muted mt-2">
+                                <i class="bi bi-geo-alt me-1 text-danger"></i>@lm.Venue?.VenueName &bull; Kickoff: @lm.MatchDate.ToString("h:mm tt")
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 text-center pb-3">
+                            <a asp-controller="LiveScore" asp-action="Console" asp-route-id="@lm.MatchId" class="btn btn-sm btn-danger px-3">
+                                <i class="bi bi-stopwatch me-1"></i> Scorekeeper Console
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="row g-4">
+    <!-- Left Column: Inter-Faculty Standings Table -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-bar-chart-line-fill text-primary me-2"></i>Inter-Faculty Championship Standings
+                </h5>
+                <div>
+                    <a asp-action="Standings" class="btn btn-sm btn-outline-primary fw-semibold me-2">
+                        <i class="bi bi-trophy me-1"></i> Full Medal Standings &rarr;
+                    </a>
+                    <span class="badge bg-light text-dark border">Updated in Real-Time</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th class="text-start">Faculty</th>
+                                <th>P</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>PF</th>
+                                <th>PA</th>
+                                <th>+/-</th>
+                                <th class="table-primary fw-bold">PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in standings)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (s.Rank == 1)
+                                        {
+                                            <span class="badge bg-warning text-dark"><i class="bi bi-trophy-fill"></i> 1</span>
+                                        }
+                                        else if (s.Rank == 2)
+                                        {
+                                            <span class="badge bg-secondary"><i class="bi bi-award-fill"></i> 2</span>
+                                        }
+                                        else if (s.Rank == 3)
+                                        {
+                                            <span class="badge bg-danger bg-opacity-75"><i class="bi bi-award"></i> 3</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fw-semibold">@s.Rank</span>
+                                        }
+                                    </td>
+                                    <td class="text-start">
+                                        <a asp-controller="Faculties" asp-action="Details" asp-route-id="@s.FacultyId" class="fw-bold text-decoration-none text-dark">
+                                            @s.FacultyCode
+                                        </a>
+                                        <div class="small text-muted text-truncate d-none d-md-block" style="max-width: 200px;">@s.FacultyName</div>
+                                    </td>
+                                    <td>@s.Played</td>
+                                    <td class="text-success fw-bold">@s.Won</td>
+                                    <td class="text-muted">@s.Drawn</td>
+                                    <td class="text-danger">@s.Lost</td>
+                                    <td class="small">@s.PointsFor</td>
+                                    <td class="small">@s.PointsAgainst</td>
+                                    <td class="small @(s.PointDifference > 0 ? "text-success fw-bold" : s.PointDifference < 0 ? "text-danger" : "text-muted")">
+                                        @(s.PointDifference > 0 ? "+" : "")@s.PointDifference
+                                    </td>
+                                    <td class="table-primary fw-bold fs-6">@s.Points</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-light small text-muted d-flex justify-content-between">
+                <span>Rule: 3 points for win &bull; 1 point for draw &bull; 0 for loss</span>
+                <a asp-controller="Faculties" asp-action="Index" class="text-decoration-none">View All Faculties &rarr;</a>
+            </div>
+        </div>
+
+        <!-- 5 Modules Showcase Quick Grid -->
+        <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap-fill text-dark me-2"></i>System Modules (Course Rubric)</h5>
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 border-start border-4 border-warning p-3">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-trophy text-warning me-1"></i> 1. Sports & Rules Engine</h6>
+                    <p class="small text-muted mb-2">Configure sports disciplines (Futsal, Badminton, Basketball) and scoring rulesets.</p>
+                    <a asp-controller="Sports" asp-action="Index" class="small fw-semibold text-decoration-none">Manage Sports &rarr;</a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 border-start border-4 border-primary p-3">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-mortarboard text-primary me-1"></i> 2. Faculties & Rosters</h6>
+                    <p class="small text-muted mb-2">Faculty management and student athlete roster registrations with positions.</p>
+                    <a asp-controller="Faculties" asp-action="Index" class="small fw-semibold text-decoration-none">Manage Rosters &rarr;</a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 border-start border-4 border-success p-3">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-geo-alt text-success me-1"></i> 3. Venues & Facilities</h6>
+                    <p class="small text-muted mb-2">Campus facilities, maintenance toggle, and student hazard feedback tickets.</p>
+                    <a asp-controller="Venues" asp-action="Index" class="small fw-semibold text-decoration-none">Manage Venues &rarr;</a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 border-start border-4 border-danger p-3">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-broadcast text-danger me-1"></i> 4. Live Command Center</h6>
+                    <p class="small text-muted mb-2">AJAX live scoring console, set point increments, and fixture scheduling.</p>
+                    <a asp-controller="Matches" asp-action="Index" class="small fw-semibold text-decoration-none">Manage Matches &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Upcoming Matches & Quick Access -->
+    <div class="col-lg-4">
+        <!-- Upcoming Fixtures Card -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0"><i class="bi bi-calendar-event me-2 text-primary"></i>Upcoming Fixtures</h6>
+                <a asp-controller="Matches" asp-action="Index" class="small text-decoration-none">View All</a>
+            </div>
+            <div class="list-group list-group-flush">
+                @if (!upcomingMatches.Any())
+                {
+                    <div class="list-group-item text-center text-muted py-3">No upcoming fixtures scheduled.</div>
+                }
+                @foreach (var m in upcomingMatches)
+                {
+                    <a asp-controller="Matches" asp-action="Details" asp-route-id="@m.MatchId" class="list-group-item list-group-item-action p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge bg-light text-dark border">@m.Sport?.SportName</span>
+                            <small class="text-muted"><i class="bi bi-clock me-1"></i>@m.MatchDate.ToString("dd MMM, h:mm tt")</small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center fw-bold">
+                            <span class="text-primary">@m.HomeFaculty?.FacultyCode</span>
+                            <span class="badge bg-secondary">VS</span>
+                            <span class="text-danger">@m.AwayFaculty?.FacultyCode</span>
+                        </div>
+                        <div class="small text-muted mt-1">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>@m.Venue?.VenueName
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Mobile App Companion Card -->
+        <div class="card shadow-sm border-0 bg-light p-3">
+            <div class="d-flex align-items-center mb-2">
+                <div class="p-2 bg-primary text-white rounded-3 me-2">
+                    <i class="bi bi-phone fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0">.NET Mobile Student App</h6>
+                    <small class="text-muted">Replicated via .NET MAUI</small>
+                </div>
+            </div>
+            <p class="small text-muted mb-3">
+                Students can monitor real-time scores, set match alert reminders, and report court defects via the cross-platform mobile client.
+            </p>
+            <ul class="list-unstyled small text-muted mb-3">
+                <li><i class="bi bi-check-circle-fill text-success me-1"></i> Mobile CRUD #1: Profile & Affiliation</li>
+                <li><i class="bi bi-check-circle-fill text-success me-1"></i> Mobile CRUD #2: Match Reminder Alerts</li>
+                <li><i class="bi bi-check-circle-fill text-success me-1"></i> Mobile CRUD #3: Facility Hazard Tickets</li>
+            </ul>
+            <a asp-controller="Feedback" asp-action="Index" class="btn btn-outline-dark btn-sm w-100">
+                <i class="bi bi-shield-check me-1"></i> Inspect Submitted Feedback Tickets
+            </a>
+        </div>
+    </div>
+</div>

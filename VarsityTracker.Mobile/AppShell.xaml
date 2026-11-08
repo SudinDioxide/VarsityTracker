@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="VarsityTracker.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:VarsityTracker.Mobile.Views"
+    Title="UTHM Varsity Tracker"
+    Shell.BackgroundColor="#0D2B45"
+    Shell.ForegroundColor="#FFFFFF"
+    Shell.TitleColor="#FFFFFF"
+    Shell.TabBarBackgroundColor="#FFFFFF"
+    Shell.TabBarForegroundColor="#0D2B45"
+    Shell.TabBarTitleColor="#0D2B45"
+    Shell.TabBarUnselectedColor="#6C757D">
+
+    <TabBar>
+        <Tab Title="Live &amp; Matches" Icon="{AppThemeBinding Light='dotnet_bot.png', Dark='dotnet_bot.png'}">
+            <ShellContent Title="Live &amp; Matches" ContentTemplate="{DataTemplate views:MatchesPage}" Route="MatchesPage" />
+        </Tab>
+
+        <Tab Title="Standings" Icon="{AppThemeBinding Light='dotnet_bot.png', Dark='dotnet_bot.png'}">
+            <ShellContent Title="Standings" ContentTemplate="{DataTemplate views:StandingsPage}" Route="StandingsPage" />
+        </Tab>
+
+        <Tab Title="Athletes" Icon="{AppThemeBinding Light='dotnet_bot.png', Dark='dotnet_bot.png'}">
+            <ShellContent Title="Athletes" ContentTemplate="{DataTemplate views:PlayersPage}" Route="PlayersPage" />
+        </Tab>
+
+        <Tab Title="My Alerts" Icon="{AppThemeBinding Light='dotnet_bot.png', Dark='dotnet_bot.png'}">
+            <ShellContent Title="My Alerts" ContentTemplate="{DataTemplate views:RemindersPage}" Route="RemindersPage" />
+        </Tab>
+
+        <Tab Title="Safety Tickets" Icon="{AppThemeBinding Light='dotnet_bot.png', Dark='dotnet_bot.png'}">
+            <ShellContent Title="Safety Tickets" ContentTemplate="{DataTemplate views:FeedbackPage}" Route="FeedbackPage" />
+        </Tab>
+
+        <Tab Title="Profile" Icon="{AppThemeBinding Light='dotnet_bot.png', Dark='dotnet_bot.png'}">
+            <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="ProfilePage" />
+        </Tab>
+    </TabBar>
+
+</Shell>

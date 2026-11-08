@@ -1,0 +1,650 @@
+@model VarsityTracker.Core.Models.Match
+@{
+    ViewData["Title"] = $"Live Score Console - {Model.HomeFaculty?.FacultyCode} vs {Model.AwayFaculty?.FacultyCode}";
+    var scoringName = Model.Sport?.ScoringType ?? "Points";
+    var maxPeriods = Model.Sport?.MaxPeriods ?? 2;
+}
+
+<nav aria-label="breadcrumb" class="mb-3 d-print-none">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-controller="LiveScore" asp-action="Index">Live Center</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Scorekeeper Console</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-11">
+        <!-- Top Status Banner -->
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </a>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary px-2 py-1">@Model.HomeFaculty?.FacultyCode</span>
+                            <span class="text-muted fw-bold small">VS</span>
+                            <span class="badge bg-danger px-2 py-1">@Model.AwayFaculty?.FacultyCode</span>
+                            <span class="text-dark fw-bold ms-1">@Model.Sport?.SportName</span>
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>@Model.Venue?.VenueName &bull;
+                            <i class="bi bi-person-badge text-primary me-1"></i>Official: @(Model.Scorekeeper?.FullName ?? User.Identity?.Name)
+                        </small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a asp-controller="Matches" asp-action="ScoreSheet" asp-route-id="@Model.MatchId" class="btn btn-outline-dark btn-sm">
+                        <i class="bi bi-printer me-1"></i> Borang Rasmi Sheet
+                    </a>
+                    <span id="ajaxSyncBadge" class="badge bg-success px-3 py-2 d-none">
+                        <i class="bi bi-check-circle-fill me-1"></i> Database Synced
+                    </span>
+                    <span id="matchStatusBadge" class="badge @(Model.Status == "Live" ? "bg-danger" : Model.Status == "Completed" ? "bg-success" : "bg-primary") fs-6 px-3 py-2">
+                        @if (Model.Status == "Live")
+                        {
+                            <span class="spinner-grow spinner-grow-sm text-white me-1" style="width: 8px; height: 8px;" role="status"></span>
+                        }
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ⚡ Viva Evaluation Demo Simulator -->
+        <div class="card shadow-sm border-0 mb-3" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 5px solid #f59e0b !important;">
+            <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">⚡</span>
+                    <div>
+                        <strong class="text-dark">1-Click Live Demo Simulator (Viva Presentation Mode)</strong>
+                        <div class="small text-muted">Simulate score pulses &amp; live commentary events to demonstrate zero-flicker .NET MAUI auto-sync.</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <button type="button" class="btn btn-warning fw-bold text-dark btn-sm shadow-sm" onclick="triggerDemoPulse()">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Pulse 1 Score &amp; Event
+                    </button>
+                    <button type="button" class="btn btn-outline-dark btn-sm" id="btnAutoSim" onclick="toggleAutoSim()">
+                        <i class="bi bi-play-circle-fill me-1"></i> Auto-Play (3s)
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetDemoMatch()">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Central Scoreboard -->
+        <div class="card shadow border-0 mb-4" style="background: linear-gradient(135deg, #0d2b45 0%, #15395b 50%, #1c4b75 100%) !important; color: #ffffff !important; border-radius: 18px !important;">
+            <div class="card-body p-4 p-md-5 text-center">
+                <div class="row align-items-center">
+                    <!-- Home Team -->
+                    <div class="col-md-5">
+                        <span class="badge bg-primary px-3 py-1 fs-6 mb-2">HOME TEAM</span>
+                        <h2 class="fw-bold text-white mb-0">@Model.HomeFaculty?.FacultyName</h2>
+                        <h5 class="text-warning fw-bold">@Model.HomeFaculty?.FacultyCode</h5>
+
+                        <!-- Home Score Display -->
+                        <div class="display-1 fw-bold my-3 text-warning font-monospace" id="homeTotalDisplay" style="text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);">
+                            @Model.HomeTotalScore
+                        </div>
+
+                        <!-- Home Score Controls -->
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button type="button" class="btn btn-outline-light btn-lg px-3" onclick="adjustScore('home', -1)">
+                                <i class="bi bi-dash-lg"></i> -1
+                            </button>
+                            <button type="button" class="btn btn-primary btn-lg px-4 fw-bold shadow" onclick="adjustScore('home', 1)">
+                                <i class="bi bi-plus-lg"></i> +1 @scoringName
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Divider & Period Control -->
+                    <div class="col-md-2 my-4 my-md-0">
+                        <div class="text-uppercase fw-bold small text-white-50 mb-2" style="letter-spacing: 1px;">Current Period</div>
+                        <select id="activePeriodSelect" class="form-select text-center fw-bold bg-white text-dark shadow-sm border-0" onchange="onPeriodChanged()">
+                            @foreach (var p in Model.MatchScores.OrderBy(p => p.PeriodNumber))
+                            {
+                                <option value="@p.PeriodNumber">
+                                    @(Model.Sport?.ScoringType == "Sets" ? $"Set {p.PeriodNumber}" : Model.Sport?.ScoringType == "Goals" ? $"Half {p.PeriodNumber}" : $"Quarter {p.PeriodNumber}")
+                                </option>
+                            }
+                        </select>
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-outline-light btn-sm w-100 fw-semibold" onclick="addNewPeriod()">
+                                <i class="bi bi-plus-circle me-1"></i> Add Period
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Away Team -->
+                    <div class="col-md-5">
+                        <span class="badge bg-danger px-3 py-1 fs-6 mb-2">AWAY TEAM</span>
+                        <h2 class="fw-bold text-white mb-0">@Model.AwayFaculty?.FacultyName</h2>
+                        <h5 class="text-warning fw-bold">@Model.AwayFaculty?.FacultyCode</h5>
+
+                        <!-- Away Score Display -->
+                        <div class="display-1 fw-bold my-3 text-warning font-monospace" id="awayTotalDisplay" style="text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);">
+                            @Model.AwayTotalScore
+                        </div>
+
+                        <!-- Away Score Controls -->
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button type="button" class="btn btn-outline-light btn-lg px-3" onclick="adjustScore('away', -1)">
+                                <i class="bi bi-dash-lg"></i> -1
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg px-4 fw-bold shadow" onclick="adjustScore('away', 1)">
+                                <i class="bi bi-plus-lg"></i> +1 @scoringName
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scorekeeper Game Status Control Bar -->
+            <div class="card-footer border-0 p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-color: rgba(0, 0, 0, 0.35); border-radius: 0 0 18px 18px;">
+                <div class="small text-white-50">
+                    <i class="bi bi-person-check text-warning me-1"></i> Official: <strong class="text-white">@(Model.Scorekeeper?.FullName ?? User.Identity?.Name)</strong>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success btn-sm px-3" onclick="setMatchStatus('Live')">
+                        <i class="bi bi-play-circle me-1"></i> Set Match Live
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm px-3 text-dark fw-bold" onclick="setMatchStatus('Scheduled')">
+                        <i class="bi bi-pause-circle me-1"></i> Reset to Scheduled
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm px-3" onclick="setMatchStatus('Completed')">
+                        <i class="bi bi-flag me-1"></i> End Match &amp; Lock Standings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Period Breakdown Table -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-table me-2 text-primary"></i>Live Period &amp; Set Breakdown</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover text-center align-middle mb-0" id="periodsTable">
+                        <thead class="table-light">
+                            <tr id="periodsTableHeader">
+                                <th class="text-start">Faculty Team</th>
+                                @foreach (var p in Model.MatchScores.OrderBy(p => p.PeriodNumber))
+                                {
+                                    <th>@(Model.Sport?.ScoringType == "Sets" ? $"Set {p.PeriodNumber}" : Model.Sport?.ScoringType == "Goals" ? $"Half {p.PeriodNumber}" : $"Q{p.PeriodNumber}")</th>
+                                }
+                                <th class="table-primary fw-bold">Total Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="homeRow">
+                                <td class="text-start fw-bold text-primary">@Model.HomeFaculty?.FacultyCode</td>
+                                @foreach (var p in Model.MatchScores.OrderBy(p => p.PeriodNumber))
+                                {
+                                    <td class="period-home-@p.PeriodNumber fw-bold font-monospace">@p.HomePoints</td>
+                                }
+                                <td class="table-primary fw-bold fs-5 font-monospace" id="homeTableTotal">@Model.HomeTotalScore</td>
+                            </tr>
+                            <tr id="awayRow">
+                                <td class="text-start fw-bold text-danger">@Model.AwayFaculty?.FacultyCode</td>
+                                @foreach (var p in Model.MatchScores.OrderBy(p => p.PeriodNumber))
+                                {
+                                    <td class="period-away-@p.PeriodNumber fw-bold font-monospace">@p.AwayPoints</td>
+                                }
+                                <td class="table-primary fw-bold fs-5 font-monospace" id="awayTableTotal">@Model.AwayTotalScore</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURE 2: Real-Time Match Events & Commentary Feed -->
+        <div class="row g-3 mb-4">
+            <!-- Left: Add Event Form -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header form-card-header py-3 px-3">
+                        <h6 class="fw-bold mb-0 text-white"><i class="bi bi-broadcast-pin me-2 text-warning"></i>Log Match Event / Commentary</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <form id="eventForm" onsubmit="submitEvent(event)">
+                            <div class="mb-2">
+                                <label class="small fw-bold text-muted">Event Type</label>
+                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                    <button type="button" class="btn btn-sm btn-outline-primary active ev-type-btn" onclick="selectEventType('Goal', this)">⚽ Goal</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary ev-type-btn" onclick="selectEventType('Point', this)">🏀 Point</button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning text-dark ev-type-btn" onclick="selectEventType('YellowCard', this)">🟨 Yellow</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger ev-type-btn" onclick="selectEventType('RedCard', this)">🟥 Red</button>
+                                    <button type="button" class="btn btn-sm btn-outline-info text-dark ev-type-btn" onclick="selectEventType('PeriodStart', this)">⏱️ Period</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary ev-type-btn" onclick="selectEventType('Highlight', this)">📢 Note</button>
+                                </div>
+                                <input type="hidden" id="eventTypeValue" value="Goal" />
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-4">
+                                    <label class="small fw-bold text-muted">Minute</label>
+                                    <input type="text" id="eventMinute" class="form-control form-control-sm" placeholder="e.g. 14'" value="14'" required />
+                                </div>
+                                <div class="col-8">
+                                    <label class="small fw-bold text-muted">Faculty</label>
+                                    <select id="eventFacultyId" class="form-select form-select-sm">
+                                        <option value="@Model.HomeFacultyId">@Model.HomeFaculty?.FacultyCode (Home)</option>
+                                        <option value="@Model.AwayFacultyId">@Model.AwayFaculty?.FacultyCode (Away)</option>
+                                        <option value="">General / Neutral</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="small fw-bold text-muted">Athlete / Official</label>
+                                <input type="text" id="eventPlayerName" class="form-control form-control-sm" placeholder="Athlete name or jersey #" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="small fw-bold text-muted">Description / Highlight</label>
+                                <input type="text" id="eventDescription" class="form-control form-control-sm" placeholder="e.g. Strike from edge of penalty box" required />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">
+                                <i class="bi bi-send-fill me-1"></i> Broadcast Live Event
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Live Chronological Timeline -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-danger"></i>Live Match Commentary Feed</h6>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadEvents()">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-3" style="max-height: 380px; overflow-y: auto;" id="eventsContainer">
+                        <div class="text-center text-muted py-4" id="eventsLoading">
+                            <span class="spinner-border spinner-border-sm me-1"></span> Loading commentary feed...
+                        </div>
+                        <div class="timeline" id="eventsTimeline"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Rosters Quick Reference -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white py-2 fw-semibold">
+                        <i class="bi bi-people me-1"></i> @Model.HomeFaculty?.FacultyCode Roster
+                    </div>
+                    <ul class="list-group list-group-flush small">
+                        @if (Model.HomeFaculty?.Players != null && Model.HomeFaculty.Players.Any())
+                        {
+                            foreach (var p in Model.HomeFaculty.Players)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><strong>@p.FullName</strong> (<code>@p.MatricNo</code>)</span>
+                                    <span class="badge bg-light text-dark border">@p.PositionRole</span>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item text-muted">No athletes registered.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-danger text-white py-2 fw-semibold">
+                        <i class="bi bi-people me-1"></i> @Model.AwayFaculty?.FacultyCode Roster
+                    </div>
+                    <ul class="list-group list-group-flush small">
+                        @if (Model.AwayFaculty?.Players != null && Model.AwayFaculty.Players.Any())
+                        {
+                            foreach (var p in Model.AwayFaculty.Players)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><strong>@p.FullName</strong> (<code>@p.MatricNo</code>)</span>
+                                    <span class="badge bg-light text-dark border">@p.PositionRole</span>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item text-muted">No athletes registered.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 20px;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 8px;
+        width: 2px;
+        background-color: #e2e8f0;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 16px;
+    }
+    .timeline-badge {
+        position: absolute;
+        left: -20px;
+        top: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 9px;
+        box-shadow: 0 0 0 3px #ffffff;
+    }
+</style>
+
+@section Scripts {
+<script>
+    const matchId = @Model.MatchId;
+    const scoringType = "@Model.Sport?.ScoringType";
+    let autoSimInterval = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadEvents();
+    });
+
+    function showSyncBadge(message = "Database Synced") {
+        const badge = document.getElementById("ajaxSyncBadge");
+        badge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> ' + message;
+        badge.classList.remove("d-none");
+        setTimeout(() => {
+            badge.classList.add("d-none");
+        }, 2500);
+    }
+
+    function adjustScore(team, delta) {
+        const periodNum = parseInt(document.getElementById("activePeriodSelect").value);
+        const payload = {
+            matchId: matchId,
+            periodNumber: periodNum,
+            homeDelta: team === 'home' ? delta : 0,
+            awayDelta: team === 'away' ? delta : 0
+        };
+
+        fetch('/LiveScore/UpdateScore', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("homeTotalDisplay").innerText = data.homeTotalScore;
+                document.getElementById("awayTotalDisplay").innerText = data.awayTotalScore;
+                document.getElementById("homeTableTotal").innerText = data.homeTotalScore;
+                document.getElementById("awayTableTotal").innerText = data.awayTotalScore;
+
+                updateStatusBadge(data.status);
+
+                const homeCell = document.querySelector('.period-home-' + data.periodNumber);
+                const awayCell = document.querySelector('.period-away-' + data.periodNumber);
+                if (homeCell) homeCell.innerText = data.periodHomePoints;
+                if (awayCell) awayCell.innerText = data.periodAwayPoints;
+
+                showSyncBadge(`Updated ${team.toUpperCase()} score`);
+            } else {
+                alert(data.message || 'Error updating score.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Network error communicating with EF Core server.");
+        });
+    }
+
+    function setMatchStatus(status) {
+        if (status === 'Completed' && !confirm("Are you sure you want to END this match and lock final scores?")) {
+            return;
+        }
+
+        fetch('/LiveScore/ChangeStatus', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matchId: matchId, newStatus: status })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                updateStatusBadge(data.status);
+                showSyncBadge(`Status changed to ${data.status}`);
+            }
+        });
+    }
+
+    function addNewPeriod() {
+        fetch('/LiveScore/AddPeriod', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matchId: matchId })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById("activePeriodSelect");
+                const label = scoringType === 'Sets' ? 'Set ' + data.periodNumber :
+                              scoringType === 'Goals' ? 'Half ' + data.periodNumber : 'Quarter ' + data.periodNumber;
+                const opt = new Option(label, data.periodNumber, true, true);
+                select.add(opt);
+
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
+    function updateStatusBadge(status) {
+        const badge = document.getElementById("matchStatusBadge");
+        badge.innerText = status;
+        badge.className = "badge fs-6 px-3 py-2 " + 
+            (status === 'Live' ? 'bg-danger' : status === 'Completed' ? 'bg-success' : 'bg-primary');
+    }
+
+    function onPeriodChanged() {
+        const periodNum = document.getElementById("activePeriodSelect").value;
+        showSyncBadge("Active: Period " + periodNum);
+    }
+
+    // ==========================================
+    // FEATURE 2: Match Event / Commentary Logic
+    // ==========================================
+    function selectEventType(type, btn) {
+        document.querySelectorAll('.ev-type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('eventTypeValue').value = type;
+    }
+
+    function submitEvent(e) {
+        e.preventDefault();
+        const payload = {
+            matchId: matchId,
+            eventType: document.getElementById('eventTypeValue').value,
+            minute: document.getElementById('eventMinute').value,
+            facultyId: document.getElementById('eventFacultyId').value ? parseInt(document.getElementById('eventFacultyId').value) : null,
+            playerName: document.getElementById('eventPlayerName').value,
+            description: document.getElementById('eventDescription').value
+        };
+
+        fetch('/LiveScore/AddEvent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showSyncBadge("Event Broadcasted!");
+                document.getElementById('eventDescription').value = '';
+                loadEvents();
+            } else {
+                alert(data.message || 'Error recording event.');
+            }
+        });
+    }
+
+    function loadEvents() {
+        const loading = document.getElementById('eventsLoading');
+        const timeline = document.getElementById('eventsTimeline');
+        if (loading) loading.style.display = 'block';
+
+        fetch(`/LiveScore/GetEvents?matchId=${matchId}`)
+            .then(r => r.json())
+            .then(events => {
+                if (loading) loading.style.display = 'none';
+                timeline.innerHTML = '';
+
+                if (!events || events.length === 0) {
+                    timeline.innerHTML = '<div class="text-center text-muted small py-3">No commentary events logged yet. Use the logger on the left to broadcast live updates.</div>';
+                    return;
+                }
+
+                events.forEach(ev => {
+                    const icon = getEventIcon(ev.eventType);
+                    const item = document.createElement('div');
+                    item.className = 'timeline-item';
+                    item.innerHTML = `
+                        <div class="timeline-badge">${icon}</div>
+                        <div class="bg-light p-2 rounded-2 border ms-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <span class="badge bg-dark px-2">${ev.minute}</span>
+                                    <strong class="small text-dark ms-1">${ev.eventType}</strong>
+                                    ${ev.facultyCode ? `<span class="badge bg-primary ms-1">${ev.facultyCode}</span>` : ''}
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small class="text-muted">${ev.createdAt}</small>
+                                    <button class="btn btn-link text-danger p-0" style="font-size: 11px;" onclick="deleteEvent(${ev.eventId})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="small text-dark">${ev.description}</div>
+                            ${ev.playerName ? `<div class="small text-muted fst-italic">Athlete: ${ev.playerName}</div>` : ''}
+                        </div>
+                    `;
+                    timeline.appendChild(item);
+                });
+            })
+            .catch(() => {
+                if (loading) loading.style.display = 'none';
+            });
+    }
+
+    function getEventIcon(type) {
+        switch (type) {
+            case 'Goal': return '⚽';
+            case 'Point': return '🏀';
+            case 'YellowCard': return '🟨';
+            case 'RedCard': return '🟥';
+            case 'PeriodStart':
+            case 'PeriodEnd': return '⏱️';
+            default: return '📢';
+        }
+    }
+
+    function deleteEvent(id) {
+        if (!confirm("Delete this event?")) return;
+        fetch(`/LiveScore/DeleteEvent/${id}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) loadEvents();
+            });
+    }
+
+    // ==========================================
+    // FEATURE 5: 1-Click Live Demo Simulator
+    // ==========================================
+    function triggerDemoPulse() {
+        fetch('/LiveScore/SimulateDemoPulse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matchId: matchId })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("homeTotalDisplay").innerText = data.homeTotalScore;
+                document.getElementById("awayTotalDisplay").innerText = data.awayTotalScore;
+                document.getElementById("homeTableTotal").innerText = data.homeTotalScore;
+                document.getElementById("awayTableTotal").innerText = data.awayTotalScore;
+                updateStatusBadge(data.status);
+                showSyncBadge(`⚡ Demo: ${data.lastFaculty} scored! (${data.homeTotalScore}-${data.awayTotalScore})`);
+                loadEvents();
+            }
+        });
+    }
+
+    function toggleAutoSim() {
+        const btn = document.getElementById('btnAutoSim');
+        if (autoSimInterval) {
+            clearInterval(autoSimInterval);
+            autoSimInterval = null;
+            btn.innerHTML = '<i class="bi bi-play-circle-fill me-1"></i> Auto-Play (3s)';
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-outline-dark');
+            showSyncBadge("Auto-simulator stopped");
+        } else {
+            triggerDemoPulse();
+            autoSimInterval = setInterval(triggerDemoPulse, 3000);
+            btn.innerHTML = '<i class="bi bi-stop-circle-fill me-1"></i> Stop Auto-Play';
+            btn.classList.remove('btn-outline-dark');
+            btn.classList.add('btn-danger');
+            showSyncBadge("⚡ Auto-simulator running every 3s!");
+        }
+    }
+
+    function resetDemoMatch() {
+        if (autoSimInterval) toggleAutoSim();
+        if (!confirm("Reset match scores to 0-0 and clear commentary events for fresh demo?")) return;
+
+        fetch('/LiveScore/ResetDemoMatch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matchId: matchId })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+</script>
+}

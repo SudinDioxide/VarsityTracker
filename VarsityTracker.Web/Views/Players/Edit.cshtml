@@ -1,0 +1,114 @@
+@model VarsityTracker.Core.Models.Player
+@{
+    ViewData["Title"] = "Edit Athlete";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Athlete Rosters</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Athlete</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header form-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-card-header-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Update Athlete Profile</h4>
+                        <p class="mb-0 small text-white-50">Modify squad assignments, matriculation data, or tactical roles</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="PlayerId" />
+                    <div asp-validation-summary="ModelOnly" class="alert badge-subtle-danger py-2 mb-3"></div>
+
+                    @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+                    {
+                        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 border mb-3">
+                            <img src="@Model.PhotoUrl" alt="@Model.FullName" class="rounded-circle object-fit-cover shadow-sm border" style="width: 54px; height: 54px;" />
+                            <div>
+                                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Current Profile Photo</small>
+                                <div class="small text-truncate" style="max-width: 320px;">@Model.PhotoUrl</div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label asp-for="FacultyId" class="form-label">Faculty Squad</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-mortarboard-fill text-primary"></i></span>
+                            <select asp-for="FacultyId" class="form-select" asp-items="ViewBag.FacultyId" required></select>
+                        </div>
+                        <span asp-validation-for="FacultyId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label">Athlete Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill text-secondary"></i></span>
+                            <input asp-for="FullName" class="form-control" required />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MatricNo" class="form-label">Matric Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-card-text text-secondary"></i></span>
+                            <input asp-for="MatricNo" class="form-control font-monospace text-uppercase" required />
+                        </div>
+                        <span asp-validation-for="MatricNo" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PositionRole" class="form-label">Position / Role</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-shield-shaded text-warning"></i></span>
+                            <input asp-for="PositionRole" class="form-control" required />
+                        </div>
+                        <span asp-validation-for="PositionRole" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Update Athlete Picture</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-upload"></i></span>
+                                    <input type="file" name="photoFile" class="form-control" accept="image/*" />
+                                </div>
+                                <small class="text-muted">Upload new photo file</small>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                    <input asp-for="PhotoUrl" class="form-control" placeholder="Or edit image URL" />
+                                </div>
+                                <small class="text-muted">Or paste direct photo URL</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Rosters
+                        </a>
+                        <button type="submit" class="btn btn-warning px-4 fw-bold shadow-sm">
+                            <i class="bi bi-check-lg me-1"></i> Update Athlete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
